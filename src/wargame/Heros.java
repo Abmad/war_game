@@ -35,7 +35,7 @@ public class Heros extends Soldat {
         g.fillRect(pos.getX(), pos.getY(), Carte.TAILLE_CARRE, Carte.TAILLE_CARRE);
         g.setColor(Color.white);
         int i = 0;
-        
+
         g.drawString(Nom, pos.getX() + 5, pos.getY() + 15);
         i++;
 
@@ -58,14 +58,6 @@ public class Heros extends Soldat {
 
         Points = point;
     }
-
-    /*  public void setTour(int tour){
-    this.tour=tour;
-    }
-
-    public int getTour() {
-        return tour;
-    }*/
     public int getPortee() {
         return this.TYPE.getPortee();																		// Tools | Templates.
     }
@@ -79,11 +71,6 @@ public class Heros extends Soldat {
 
     public String toString() {
         return this.TYPE.toString() + "( " + this.getPointsDeVie() + "," + this.getPortee() + "," + this.getPuissance() + this.getTir()+ ")";
-
-    }
-    public boolean dejaJoue(Soldat soldat){
-
-        return false;
 
     }
 

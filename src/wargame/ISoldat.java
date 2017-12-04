@@ -79,17 +79,13 @@ public interface ISoldat {
         }
     }
 
-//    int getPoints();
 
-    int getTour();
 
     int getPortee();
 
     int getPuissance();
 
     int getTir();
-
-    void joueTour(int tour);
 
     void combat(Soldat soldat);
 

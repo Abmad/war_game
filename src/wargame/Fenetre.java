@@ -17,11 +17,9 @@ public class Fenetre extends JFrame implements EventListener {
     public static JLabel lab1 = new JLabel();
     public PanneauJeu p2 = new PanneauJeu();
     public Position source = new Position();
-    public int clickCount=0;
     boolean isFirstClick = true;
 
     public Fenetre() {
-        int a = 5, b = 6;
         this.setTitle("WarGame");
         this.setSize(Carte.MAX_MAP_WIDTH+50, Carte.MAX_MAP_HEIGHT+100);
         this.setDefaultCloseOperation(3);
@@ -34,21 +32,17 @@ public class Fenetre extends JFrame implements EventListener {
 
         JPanel p3 = new JPanel();
 
-        JButton b1 = new JButton("Fin du Tour");
+        JButton btnFinTour = new JButton("Fin du Tour");
 
-        JLabel lab2 = new JLabel(p2.c.trouveHeros().toString());
+        JLabel lab2 = new JLabel();
 
         p1.setLayout(new FlowLayout());
 
         p3.setLayout(new BorderLayout());
 
-        b1.addMouseListener(new MouseAdapter() {
+        btnFinTour.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 p2.c.jouerSoldats(p2);      //deplacer le monste
-
-               // System.out.println(p2.c.trouveHeros(new Position(40, 40)));
-                //System.out.println(p2.c.trouvePositionVide(new Position(40, 40)));
-
             }
 
             public void mousePressed(MouseEvent e) {
@@ -80,8 +74,6 @@ public class Fenetre extends JFrame implements EventListener {
             }
 
             public void mousePressed(MouseEvent e) {
-//                Element E=p2.c.getElement(new Position(e.getX(),e.getY()));
-//                System.out.println(E.toString());
                 if( isFirstClick){
                     source = new Position(e.getX(),e.getY());
                     Element element =p2.c.getElement(source);
@@ -96,27 +88,14 @@ public class Fenetre extends JFrame implements EventListener {
 
             }
 
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            public void mouseDragged(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-              //  System.out.println("mouseReleased en " + e.getX() + " " + e.getY());
-            }
         });
-        p1.add(b1);
+        p1.add(btnFinTour);
         p1.add(lab1);
         p3.add(lab2);
 
         cont.add(p1, BorderLayout.NORTH);
         cont.add(p2, BorderLayout.CENTER);
         cont.add(p3, BorderLayout.SOUTH);
-        //System.out.println(Heros.getNbH());
 
     }
 }

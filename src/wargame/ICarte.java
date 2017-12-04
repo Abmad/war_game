@@ -10,10 +10,7 @@ public interface ICarte {
 	Position trouvePositionJouableAlea(Position pos); // Trouve une position vide choisie
 	// al�atoirement parmi les 8 positions adjacentes de pos
 
-	Heros trouveHeros(); // Trouve al�atoirement un h�ros sur la carte
 
-	Heros trouveHeros(Position pos); // Trouve un h�ros choisi al�atoirement
-										// parmi les 8 positions adjacentes de pos
 
 	boolean deplaceSoldat(Position pos, Soldat soldat);
 

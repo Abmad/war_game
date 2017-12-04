@@ -44,18 +44,23 @@ public class Carte implements ICarte {
             lesElements.add(o);
         }
         for (int i = 0; i < Heros.MAX_HEROS; i++) {
-            Heros h = new Heros(TypesH.getTypeHAlea(), new Position("Hero"));
-            addDrawable(h);
-            lesElements.add(h);
+            Position p = new Position("Hero");
+            if (getElement(p) == null) {
+                Heros h = new Heros(TypesH.getTypeHAlea(), p);
+                addDrawable(h);
+                lesElements.add(h);
+            }
         }
         for (int i = 0; i < Monstre.MAX_MONSTRES; i++) {
-            Monstre m = new Monstre(TypesM.getTypeMAlea(), new Position("Monstre"));
-            addDrawable(m);
-            lesElements.add(m);
+            Position p = new Position("Monstre");
+            if (getElement(p) == null) {
+                Monstre m = new Monstre(TypesM.getTypeMAlea(), p);
+                addDrawable(m);
+                lesElements.add(m);
+            }
         }
         Fenetre.lab1.setText("Il rest " + Heros.getNbH() + " Hero et " + Monstre.getNbM() + " Monstre");
         nb++;
-        //System.out.println(nb);
     }
 
     public void addDrawable(Element d) {
@@ -81,7 +86,7 @@ public class Carte implements ICarte {
 
     @Override
     /**
-     * retourn une position jouable soit un monstre dans la porte d'atk sinon une position adj ou il n'y a pas d'obstacle[
+     * retourn une position adj ou il n'y a pas d'obstacle[
      */
     public Position trouvePositionJouableAlea(Position posElement) {
         ArrayList<Position> positonAdja = new ArrayList<Position>();
@@ -118,63 +123,10 @@ public class Carte implements ICarte {
         return H;
     }
 
-    public Heros trouveHeros() {
-        ArrayList<Heros> H = new ArrayList();
-        Random randomno = new Random();
-        for (int i = 0; i < lesElements.size(); i++) {
-            if (lesElements.get(i) instanceof Heros) {
-                H.add((Heros) lesElements.get(i));
-            }
-        }
-        return H.get(randomno.nextInt(H.size() - 1));
-    }
-
-    @Override
-    public Heros trouveHeros(Position pos) {
-        ArrayList<Heros> H = new ArrayList();
-        ArrayList<Heros> HP = ArrayHeros();
-        Random randomno = new Random();
-        Position p1 = new Position(pos.getX() + 20, pos.getY());
-        Position p2 = new Position(pos.getX() + 20, pos.getY() + 20);
-        Position p3 = new Position(pos.getX() + 20, pos.getY() - 20);
-        Position p4 = new Position(pos.getX() - 20, pos.getY());
-        Position p5 = new Position(pos.getX() - 20, pos.getY() + 20);
-        Position p6 = new Position(pos.getX() - 20, pos.getY() - 20);
-        Position p7 = new Position(pos.getX(), pos.getY() - 20);
-        Position p8 = new Position(pos.getX(), pos.getY() + 20);
-        for (int i = 0; i < HP.size(); i++) {
-
-            if (HP.get(i).pos.toString().equals(p1.toString())) {
-                H.add(HP.get(i));
-            } else if (HP.get(i).pos.toString().equals(p2.toString())) {
-                H.add(HP.get(i));
-            } else if (HP.get(i).pos.toString().equals(p3.toString())) {
-                H.add(HP.get(i));
-            } else if (HP.get(i).pos.toString().equals(p4.toString())) {
-                H.add(HP.get(i));
-            } else if (HP.get(i).pos.toString().equals(p5.toString())) {
-                H.add(HP.get(i));
-            } else if (HP.get(i).pos.toString().equals(p6.toString())) {
-                H.add(HP.get(i));
-            } else if (HP.get(i).pos.toString().equals(p7.toString())) {
-                H.add(HP.get(i));
-            }
-            if (HP.get(i).pos.toString().equals(p8.toString())) {
-                H.add(HP.get(i));
-            } else {
-                return null;
-            }
-        }
-
-        return H.get(randomno.nextInt(H.size()));
-
-    }
-
     @Override
     public boolean deplaceSoldat(Position pos, Soldat soldat) {
         removeDrawable(soldat);
         pos = pos.positionDessinable();
-//            System.out.println("Deplacable position: "+pos.toString());
         soldat.seDeplace(pos);
         addDrawable(soldat);
         soldat.setJouer(true);
@@ -183,16 +135,16 @@ public class Carte implements ICarte {
 
     public void mort(Soldat perso) {
         removeDrawable(perso);
+        lesElements.remove(perso);
+
     }
 
     public boolean actionHeros(Position source, Position destination) {
 
         Element clickedElement = getElement(source);
         Element destinationElement = getElement(destination);
-        System.out.println("in action hero");
         if (clickedElement != null && clickedElement instanceof Heros) {
             Soldat hero = (Soldat) clickedElement;
-            System.out.println(hero.peutJouer());
             if (!hero.peutJouer())
                 return false;
             if (clickedElement.pos.estVoisine(destination)) {
@@ -231,7 +183,6 @@ public class Carte implements ICarte {
                                     mort(hero);
                             }
                         }
-
                     }
                 }
             }
@@ -258,6 +209,8 @@ public class Carte implements ICarte {
                         }
                     }
                 }
+                if (!monstre.peutJouer())
+                    continue;
                 Position posAlea = trouvePositionJouableAlea(monstre.pos);
 //                System.out.println(posAlea.toString());
                 Element elementAdj = getElement(posAlea);
@@ -282,8 +235,8 @@ public class Carte implements ICarte {
         }
         for (Iterator<Element> j = lesElements.iterator(); j.hasNext(); ) {
             Element element = j.next();
-            if(element instanceof Soldat){
-                ((Soldat)element).setJouer(false);
+            if (element instanceof Soldat) {
+                ((Soldat) element).setJouer(false);
             }
         }
         System.out.println("end jouser soldat");
@@ -304,7 +257,6 @@ public class Carte implements ICarte {
 
                 ((Obstacle) ob).seDessiner(g);
             } else if (ob instanceof Heros) {
-
                 ((Heros) ob).seDessinerH(g, IConfig.COULEUR_HEROS);
             } else if (ob instanceof Monstre) {
 

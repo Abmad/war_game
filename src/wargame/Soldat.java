@@ -5,7 +5,6 @@ import java.util.Random;
 
 public class Soldat extends Element implements ISoldat {
 
-    protected int tour;
     protected boolean jouer;
     protected int pointsDeVie;
     protected int puissance;
@@ -23,34 +22,14 @@ public class Soldat extends Element implements ISoldat {
             this.pointsDeVie = 0;
     }
 
-    public void setPuissance(int puissance) {
-        this.puissance = puissance;
-    }
-
     public int getPorteeVisuelle() {
         return porteeVisuelle;
     }
 
-    public void setPorteeVisuelle(int porteeVisuelle) {
-        this.porteeVisuelle = porteeVisuelle;
-    }
-
-    public void setTir(int tir) {
-        this.tir = tir;
-    }
 
     public Soldat(Position posi) {
         super(posi);
         jouer = false;
-    }
-
-    public void setTour(int tour) {
-        this.tour = tour;
-    }
-
-    @Override
-    public int getTour() {
-        return tour;
     }
 
 
@@ -59,11 +38,6 @@ public class Soldat extends Element implements ISoldat {
         return  this.getPortee();
     }
 
-    @Override
-    public void joueTour(int tour) {
-        this.setTour(getTour() + tour);
-
-    }
 
     public void seDeplace(Position newPos) {
         this.pos = newPos;
@@ -78,15 +52,14 @@ public class Soldat extends Element implements ISoldat {
 
     @Override
     public void combat(Soldat soldat) {
-        int puissanceAtk;
+        int puissanceAtk = 0;
 
         Random randomn = new Random();
+        System.out.println(soldat.pos.estVoisine(this.pos));
         if(soldat.pos.estVoisine(this.pos)){
-            System.out.println("Puiss : "+this.getPuissance());
             puissanceAtk = randomn.nextInt(this.getPuissance());
 
-        }else{
-            System.out.println("Ptir : "+this.getTir());
+        }else if(this.getPorteeVisuelle() > 1){
             puissanceAtk =  randomn.nextInt(this.getTir());
 
         }
@@ -120,8 +93,6 @@ public class Soldat extends Element implements ISoldat {
         int tailleCarree = Carte.TAILLE_CARRE * this.getPortee();
         Position soldatActuel = this.pos;
         Position soldatS= s.pos;
-//        System.out.println("This: "+this.toString()+this.pos.toString());
-//        System.out.println("s: "+s.toString()+s.pos.toString());
         return (
 
 //                (pos.getY()  > 0 && pos.getX()  > 0 &&

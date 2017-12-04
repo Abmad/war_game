@@ -10,7 +10,7 @@ import javax.swing.*;
 
 public class PanneauJeu extends JPanel implements MouseListener {
 	
-	public  Carte c=new Carte(); 
+	public  Carte c=new Carte();
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
@@ -19,15 +19,10 @@ public class PanneauJeu extends JPanel implements MouseListener {
 
 	}
 
-	public void clear() {
-		c.clear();
-		repaint();
-	}
 	/* changer couleur en fqisqnt les evenements*/
 	@Override
 	public void mouseClicked(MouseEvent event) {
-		// System.out.println("Mouse movement detected! Actual mouse position is: " + event.getX()+ "," + event.getY() + ".");
-		
+
 	}
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
@@ -42,16 +37,12 @@ public class PanneauJeu extends JPanel implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
-	public void mouseMoved(MouseEvent event) {
-	    //TODO
-//	    System.out.println("Mouse movement detected! Actual mouse position is: " + event.getX()+ "," + event.getY() + ".");
-	  }   
 
 }

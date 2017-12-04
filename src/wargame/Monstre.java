@@ -60,13 +60,6 @@ public class Monstre extends Soldat {
         return this.TYPE.getPortee();
     }
 
-//    public void combat(Soldat soldat) {
-//
-//        Random randomno = new Random();
-//        int point = ((Heros) soldat).TYPE.getPoints() - randomno.nextInt(this.TYPE.getPuissance());
-//        ((Heros) soldat).TYPE.setPoints(point);
-//
-//    }
     public String toString() {
         return this.TYPE.toString() + "( " + this.getPointsDeVie() + "," + this.getPortee() + "," + this.getPuissance()+ this.getTir() + ")";
 

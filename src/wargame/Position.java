@@ -90,7 +90,8 @@ public class Position implements IConfig {
 
 //                (pos.getY()  > 0 && pos.getX()  > 0 &&
 //                        pos.getY() < Carte.MAX_MAP_HEIGHT && pos.getX() > Carte.MAX_MAP_WIDTH  )&&
-                        // si le point exist dans le rang haut ou bas
+          (tailleCarree-1 < pos.getX() && pos.getX() < 641 && pos.getY() < 581 && 0 < pos.getY()) &&
+            // si le point exist dans le rang haut ou bas
                         (((pos.getY() >= this.getY() - (tailleCarree - 1) && pos.getY() < this.getY() ||
                                 pos.getY() <= this.getY() + (tailleCarree * 2) - 1 && pos.getY() > this.getY() + tailleCarree - 1)
                                 &&
