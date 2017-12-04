@@ -1,44 +1,111 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package wargame;
 
-/**
- *
- * @author abdox
- */
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Random;
+
+import wargame.Obstacle.TypeObstacle;
+
 public class Heros extends Soldat {
 
-    @Override
+    public static final int MAX_HEROS = 10;
+    protected TypesH TYPE;
+    private static int nbH = 0;
+    private int nb = 0;
+    protected static int tour = 0;
+    protected int Points;
+    protected Carte carte;
+    private String Nom;
+    private String H[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
+        "S", "T", "U", "V", "W", "X", "Z"};
+
+    public Heros(TypesH type, Position pos) {
+        super(pos);
+        TYPE = type;
+        pointsDeVie = TYPE.getPoints();
+        puissance = TYPE.getPuissance();
+        tir = TYPE.getTir();
+        porteeVisuelle = TYPE.getPortee();
+        Nom=H[nbH];
+        nbH++;
+    }
+
+    public void seDessinerH(Graphics g, Color Couleur) {
+        g.setColor(Couleur);
+        g.fillRect(pos.getX(), pos.getY(), Carte.TAILLE_CARRE, Carte.TAILLE_CARRE);
+        g.setColor(Color.white);
+        int i = 0;
+        
+        g.drawString(Nom, pos.getX() + 5, pos.getY() + 15);
+        i++;
+
+    }
+
+    public static int getNbH() {
+        return nbH;
+    }
+
+    public void setNbH(int nbH) {
+        this.nbH = nbH;
+    }
+
     public int getPoints() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (this.TYPE).getPoints();
+
     }
 
-    @Override
+    public void setPoints(int point) {
+
+        Points = point;
+    }
+
+    /*  public void setTour(int tour){
+    this.tour=tour;
+    }
+
     public int getTour() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
+        return tour;
+    }*/
     public int getPortee() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.TYPE.getPortee();																		// Tools | Templates.
     }
 
-    @Override
-    public void joueTour(int tour) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    /**
+     * public void joueTour(int tour) { this.setTour(getTour()+tour);
+     *
+     * }
+     */
+   
+//   public void combat(Soldat soldat) {
+//        Random randomno = new Random();
+//
+//         //verifier en utilisant estvoisine
+//
+//        if (this.pos.estVoisine(soldat.pos)) {
+//            int point = ((Monstre) soldat).getPoints() - randomno.nextInt(this.TYPE.getPuissance());
+//            ((Monstre) soldat).setPoints(point);
+//        } else {
+//            int point = this.TYPE.getTir();
+//            ((Monstre) soldat).setPoints(point);
+//        }
+//        if (((Monstre) soldat).getPoints() <= 0) {
+//            carte.mort(soldat);
+//        }
+//    }
 
-    @Override
-    public void combat(Soldat soldat) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void seDeplace(Position newPos) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.pos = newPos;
+        tour++;
     }
-    
+
+    public String toString() {
+        return this.TYPE.toString() + "( " + this.getPointsDeVie() + "," + this.getPortee() + "," + this.getPuissance() + this.getTir()+ ")";
+
+    }
+    public boolean dejaJoue(Soldat soldat){
+
+        return false;
+
+    }
+
 }
