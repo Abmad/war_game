@@ -18,6 +18,7 @@ public class Fenetre extends JFrame implements EventListener {
     public PanneauJeu p2 = new PanneauJeu();
     public Position source = new Position();
     public int clickCount=0;
+    boolean isFirstClick = true;
 
     public Fenetre() {
         int a = 5, b = 6;
@@ -69,23 +70,22 @@ public class Fenetre extends JFrame implements EventListener {
         });
         p2.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                for (int i = 0; i < p2.c.lesElements.size(); i++) {
-                    if (p2.c.lesElements.get(i).pos.getX() < e.getX()
-                            && p2.c.lesElements.get(i).pos.getX() + 20 > e.getX()
-                            && p2.c.lesElements.get(i).pos.getY() < e.getY()
-                            && p2.c.lesElements.get(i).pos.getY() + 20 > e.getY()) {
-                        lab2.setText(p2.c.lesElements.get(i).toString());
-                    }
-                }
+               Element element = p2.c.getElement(new Position(e.getX(),e.getY()));
+               if(element != null)
+                lab2.setText(element.toString());
+               else
+                   lab2.setText("");
+
 
             }
-            boolean isFirstClick = true;
+
             public void mousePressed(MouseEvent e) {
 //                Element E=p2.c.getElement(new Position(e.getX(),e.getY()));
 //                System.out.println(E.toString());
-//                System.out.println(isFirstClick);
                 if( isFirstClick){
                     source = new Position(e.getX(),e.getY());
+                    Element element =p2.c.getElement(source);
+                    if(element != null && element instanceof Heros)
                     isFirstClick = false;
                 } else {
                     Position destination = new Position(e.getX(),e.getY());

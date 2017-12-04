@@ -71,19 +71,27 @@ public class Soldat extends Element implements ISoldat {
 
     }
 
+
+    public void setJouer(boolean jouer) {
+        this.jouer = jouer;
+    }
+
     @Override
     public void combat(Soldat soldat) {
         int puissanceAtk;
 
         Random randomn = new Random();
         if(soldat.pos.estVoisine(this.pos)){
+            System.out.println("Puiss : "+this.getPuissance());
             puissanceAtk = randomn.nextInt(this.getPuissance());
 
         }else{
+            System.out.println("Ptir : "+this.getTir());
             puissanceAtk =  randomn.nextInt(this.getTir());
 
         }
         soldat.setPointsDeVie(soldat.getPointsDeVie()-puissanceAtk);
+        jouer = true;
 
     }
 
@@ -112,8 +120,8 @@ public class Soldat extends Element implements ISoldat {
         int tailleCarree = Carte.TAILLE_CARRE * this.getPortee();
         Position soldatActuel = this.pos;
         Position soldatS= s.pos;
-        System.out.println("This: "+this.toString()+this.pos.toString());
-        System.out.println("s: "+s.toString()+s.pos.toString());
+//        System.out.println("This: "+this.toString()+this.pos.toString());
+//        System.out.println("s: "+s.toString()+s.pos.toString());
         return (
 
 //                (pos.getY()  > 0 && pos.getX()  > 0 &&

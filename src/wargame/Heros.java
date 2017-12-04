@@ -70,28 +70,7 @@ public class Heros extends Soldat {
         return this.TYPE.getPortee();																		// Tools | Templates.
     }
 
-    /**
-     * public void joueTour(int tour) { this.setTour(getTour()+tour);
-     *
-     * }
-     */
-   
-//   public void combat(Soldat soldat) {
-//        Random randomno = new Random();
-//
-//         //verifier en utilisant estvoisine
-//
-//        if (this.pos.estVoisine(soldat.pos)) {
-//            int point = ((Monstre) soldat).getPoints() - randomno.nextInt(this.TYPE.getPuissance());
-//            ((Monstre) soldat).setPoints(point);
-//        } else {
-//            int point = this.TYPE.getTir();
-//            ((Monstre) soldat).setPoints(point);
-//        }
-//        if (((Monstre) soldat).getPoints() <= 0) {
-//            carte.mort(soldat);
-//        }
-//    }
+
 
     public void seDeplace(Position newPos) {
         this.pos = newPos;
@@ -106,6 +85,15 @@ public class Heros extends Soldat {
 
         return false;
 
+    }
+
+    public void seReposer(){
+        int pdv = this.getPointsDeVie();
+        pdv += 5;
+        if(pdv >= this.TYPE.getPoints())
+            pdv = this.TYPE.getPoints();
+        this.setPointsDeVie(pdv);
+        jouer = true;
     }
 
 }
