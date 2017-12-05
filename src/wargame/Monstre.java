@@ -9,7 +9,7 @@ import wargame.ISoldat.TypesH;
 
 import javax.imageio.ImageIO;
 
-public class Monstre extends Soldat {
+public class Monstre extends Soldat implements java.io.Serializable {
     public static final int MAX_MONSTRES = 15;
     protected TypesM TYPE;
     private static int nbM = 0;
@@ -36,16 +36,16 @@ public class Monstre extends Soldat {
         g.setColor(IConfig.COULEUR_MONSTRES);
 //        g.fillRect(pos.getX(), pos.getY(), Carte.TAILLE_CARRE, Carte.TAILLE_CARRE);
         g.setColor(Color.white);
-        int i = 0;
+//        int i = 0;
         try {
-            Image bgImage = ImageIO.read(new File("images/goblin_e.png"));
-            g.drawImage(bgImage, pos.getX(), pos.getY(),p);
+            Image bgImage = ImageIO.read(new File(this.TYPE.getICONE()));
+            g.drawImage(bgImage, pos.getX() , pos.getY(),Carte.TAILLE_CARRE,Carte.TAILLE_CARRE,p);
 //			g.drawImage(bgImage, 20, 250, this);
         }catch (IOException ex){
             System.out.println(ex.getMessage());
         }
 //        g.drawString(Nom, pos.getX() + 5, pos.getY() + 15);
-        i++;
+//        i++;
 
     }
 

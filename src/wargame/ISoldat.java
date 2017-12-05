@@ -1,18 +1,23 @@
 package wargame;
 
+import java.awt.*;
+
 public interface ISoldat {
     public static enum TypesH {
-        HUMAIN(40, 3, 10, 10), NAIN(80, 1, 20, 0), ELF(70, 5, 2, 6), HOBBIT(20, 4, 6, 15),MAGE(30,4,7,20);
+        HUMAIN(40, 3, 10, 10, "images/homme.png"), NAIN(80, 1, 20, 0, "images/nain.png"), ELF(70, 5, 2, 6, "images/elf.png"), HOBBIT(20, 4, 6, 15, "images/hobbit.png"), MAGE(30, 4, 7, 20, "images/mage.png");
         private int POINTS_DE_VIE;
         private final int PORTEE_VISUELLE;
         private final int PUISSANCE;
         private final int TIR;
+        private final String ICONE;
 
-        TypesH(int points, int portee, int puissance, int tir) {
+        TypesH(int points, int portee, int puissance, int tir, String icone) {
             POINTS_DE_VIE = points;
             PORTEE_VISUELLE = portee;
             PUISSANCE = puissance;
             TIR = tir;
+            ICONE = icone;
+
         }
 
         public int getPoints() {
@@ -21,6 +26,10 @@ public interface ISoldat {
 
         public void setPoints(int Points) {
             POINTS_DE_VIE = Points;
+        }
+
+        public String getICONE() {
+            return ICONE;
         }
 
         public int getPortee() {
@@ -41,17 +50,19 @@ public interface ISoldat {
     }
 
     public static enum TypesM {
-        ORC(100, 1, 10, 0), TROLL(40, 2, 20, 10), GOBELIN(20, 4, 5, 20),MORTVIVANT(80,1,10,0);
+        ORC(100, 1, 10, 0, "images/orc.png"), TROLL(40, 2, 20, 10, "images/troll.png"), GOBELIN(20, 4, 5, 20, "images/goblin_e.png"), MORTVIVANT(80, 1, 10, 0, "images/mortv.png");
         private int POINTS_DE_VIE;
         private final int PORTEE_VISUELLE;
         private final int PUISSANCE;
         private final int TIR;
+        private final String ICONE;
 
-        TypesM(int points, int portee, int puissance, int tir) {
+        TypesM(int points, int portee, int puissance, int tir, String icone) {
             POINTS_DE_VIE = points;
             PORTEE_VISUELLE = portee;
             PUISSANCE = puissance;
             TIR = tir;
+            ICONE = icone;
         }
 
         public int getPoints() {
@@ -74,11 +85,15 @@ public interface ISoldat {
             return TIR;
         }
 
+        public String getICONE() {
+            return ICONE;
+        }
+
+
         public static TypesM getTypeMAlea() {
             return values()[(int) (Math.random() * values().length)];
         }
     }
-
 
 
     int getPortee();

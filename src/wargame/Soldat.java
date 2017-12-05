@@ -3,7 +3,7 @@ package wargame;
 
 import java.util.Random;
 
-public class Soldat extends Element implements ISoldat {
+public class Soldat extends Element implements ISoldat,java.io.Serializable {
 
     protected boolean jouer;
     protected int pointsDeVie;

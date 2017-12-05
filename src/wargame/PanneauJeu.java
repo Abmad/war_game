@@ -14,12 +14,16 @@ import javax.swing.*;
 public class PanneauJeu extends JPanel implements MouseListener,java.io.Serializable {
 	
 	public  Carte c=new Carte();
+
+	public PanneauJeu(){
+		Graphics g = this.getGraphics();
+
+	}
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
 		try {
-			Image bgImage = ImageIO.read(new File("images/carteBg_1.jpg"));
-			g.drawImage(bgImage, 20, 0, this);
-//			g.drawImage(bgImage, 20, 250, this);
+			Image bgImage = ImageIO.read(new File("images/desert_map.png"));
+			g.drawImage(bgImage, 15, -5,Carte.MAX_MAP_WIDTH,Carte.MAX_MAP_HEIGHT+10, this);
+
 		}catch (IOException ex){
 			System.out.println(ex.getMessage());
 		}

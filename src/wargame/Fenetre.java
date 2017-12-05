@@ -63,13 +63,7 @@ public class Fenetre extends JFrame implements EventListener {
 
             }
         });
-        p2.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                p2.c.getPorteDeplacement(p2, new Position(e.getX(), e.getY()));
-            }
-        });
-        p2.addMouseListener(new MouseAdapter() {
+        MouseAdapter panneauJeuMouseAdapter = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 Element element = p2.c.getElement(new Position(e.getX(), e.getY()));
                 if (element != null)
@@ -95,7 +89,9 @@ public class Fenetre extends JFrame implements EventListener {
 
             }
 
-        });
+        };
+
+        p2.addMouseListener(panneauJeuMouseAdapter);
 
         btnSauvegarder.addMouseListener(new MouseAdapter() {
             @Override
@@ -150,6 +146,7 @@ public class Fenetre extends JFrame implements EventListener {
                     cont.remove(p2);
 
                     p2 = loadedGame;
+                    p2.addMouseListener(panneauJeuMouseAdapter);
                     cont.add(p2, BorderLayout.CENTER);
                     p2.repaint();
 
@@ -159,11 +156,13 @@ public class Fenetre extends JFrame implements EventListener {
                 {
 
                     System.out.println("IOException is caught");
+                    System.out.println(ex.getMessage());
                 }
 
                 catch(ClassNotFoundException ex)
                 {
                     System.out.println("ClassNotFoundException is caught");
+                    System.out.println(ex.getMessage());
                 }
             }
         });

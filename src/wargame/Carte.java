@@ -26,7 +26,7 @@ import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
 import wargame.Obstacle.TypeObstacle;
 
-public class Carte implements ICarte,java.io.Serializable {
+public class Carte implements ICarte, java.io.Serializable {
 
     public static final int MAX_MAP_WIDTH = 650;
     public static final int MAX_MAP_HEIGHT = 600;
@@ -149,11 +149,17 @@ public class Carte implements ICarte,java.io.Serializable {
 
     @Override
     public boolean deplaceSoldat(Position pos, Soldat soldat) {
-        removeDrawable(soldat);
         pos = pos.positionDessinable();
-        soldat.seDeplace(pos);
-        addDrawable(soldat);
-        soldat.setJouer(true);
+        int diffX = pos.getX() - soldat.pos.getX();
+        int diffY = pos.getY() - soldat.pos.getY();
+
+        if (((diffX < (TAILLE_CARRE - 1) * 2 && diffX >= 0) || (diffX > ((TAILLE_CARRE - 1) * (-2))) && diffX <= 0) && ((diffY < (TAILLE_CARRE - 1) * 2 && diffY >= 0) || (diffY > ((TAILLE_CARRE - 1) * (-2))) && diffY <= 0)) {
+            removeDrawable(soldat);
+            soldat.seDeplace(pos);
+            addDrawable(soldat);
+            soldat.setJouer(true);
+            return true;
+        }
         return false;
     }
 
@@ -171,6 +177,7 @@ public class Carte implements ICarte,java.io.Serializable {
             Soldat hero = (Soldat) clickedElement;
             if (!hero.peutJouer())
                 return false;
+            System.out.println(clickedElement.pos.estVoisine(destination));
             if (clickedElement.pos.estVoisine(destination)) {
                 if (destinationElement == null) {
                     //deplacement normal
@@ -264,7 +271,7 @@ public class Carte implements ICarte,java.io.Serializable {
 
     }
 
-    public void toutDessiner(Graphics g,PanneauJeu p) {
+    public void toutDessiner(Graphics g, PanneauJeu p) {
         for (int i = 20; i < MAX_MAP_WIDTH; i = i + 20) {
             for (int j = 0; j < MAX_MAP_HEIGHT; j = j + 20) {
                 g.drawRect(i, j, TAILLE_CARRE, TAILLE_CARRE);
@@ -277,10 +284,10 @@ public class Carte implements ICarte,java.io.Serializable {
 
                 ((Obstacle) ob).seDessiner(g);
             } else if (ob instanceof Heros) {
-                ((Heros) ob).seDessinerH(g, IConfig.COULEUR_HEROS);
+                ((Heros) ob).seDessinerH(g, IConfig.COULEUR_HEROS,p);
             } else if (ob instanceof Monstre) {
 
-                ((Monstre) ob).seDessinerM(g,p);
+                ((Monstre) ob).seDessinerM(g, p);
 
             }
 
@@ -311,32 +318,32 @@ public class Carte implements ICarte,java.io.Serializable {
         Element element = getElement(pos);
         if (element != null && element instanceof Soldat) {
 
-            System.out.println(element.toString());
+//            System.out.println(element.toString());
             Graphics g = p.getGraphics();
             g.setColor(Color.GREEN);
-            if(getElement(new Position(element.pos.getX()+TAILLE_CARRE,element.pos.getY()))==null)
-            g.fillRect(element.pos.getX()+TAILLE_CARRE,element.pos.getY(),TAILLE_CARRE,TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY())) == null)
+                g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY(), TAILLE_CARRE, TAILLE_CARRE);
 
-            if(getElement(new Position(element.pos.getX()+TAILLE_CARRE,element.pos.getY()+TAILLE_CARRE)) == null)
-            g.fillRect(element.pos.getX()+TAILLE_CARRE,element.pos.getY()+TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE)) == null)
+                g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
 
-            if(getElement(new Position(element.pos.getX()+TAILLE_CARRE,element.pos.getY()-TAILLE_CARRE)) == null)
-            g.fillRect(element.pos.getX()+TAILLE_CARRE,element.pos.getY()-TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE)) == null)
+                g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
 
-            if(getElement(new Position(element.pos.getX()-TAILLE_CARRE,element.pos.getY())) == null)
-            g.fillRect(element.pos.getX()-TAILLE_CARRE,element.pos.getY(),TAILLE_CARRE,TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX() - TAILLE_CARRE, element.pos.getY())) == null)
+                g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY(), TAILLE_CARRE, TAILLE_CARRE);
 
-            if(getElement(new Position(element.pos.getX()-TAILLE_CARRE,element.pos.getY()+TAILLE_CARRE)) == null)
-            g.fillRect(element.pos.getX()-TAILLE_CARRE,element.pos.getY()+TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX() - TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE)) == null)
+                g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
 
-            if(getElement(new Position(element.pos.getX()-TAILLE_CARRE,element.pos.getY()-TAILLE_CARRE)) == null)
-            g.fillRect(element.pos.getX()-TAILLE_CARRE,element.pos.getY()-TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX() - TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE)) == null)
+                g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
 
-            if(getElement(new Position(element.pos.getX(),element.pos.getY()-TAILLE_CARRE)) == null)
-            g.fillRect(element.pos.getX(),element.pos.getY()-TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX(), element.pos.getY() - TAILLE_CARRE)) == null)
+                g.fillRect(element.pos.getX(), element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
 
-            if(getElement(new Position(element.pos.getX(),element.pos.getY()+TAILLE_CARRE)) == null)
-            g.fillRect(element.pos.getX(),element.pos.getY()+TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX(), element.pos.getY() + TAILLE_CARRE)) == null)
+                g.fillRect(element.pos.getX(), element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
             repaintPortee = true;
         } else {
             if (repaintPortee) {
@@ -344,7 +351,6 @@ public class Carte implements ICarte,java.io.Serializable {
                 p.repaint();
             }
         }
-
 
 
     }
