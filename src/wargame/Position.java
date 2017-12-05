@@ -3,7 +3,7 @@ package wargame;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Position implements IConfig {
+public class Position implements IConfig,java.io.Serializable {
     private int x, y;
     private ArrayList<Integer> x1 = new ArrayList();
     private ArrayList<Integer> x2 = new ArrayList();

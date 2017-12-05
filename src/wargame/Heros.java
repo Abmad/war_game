@@ -70,7 +70,7 @@ public class Heros extends Soldat {
     }
 
     public String toString() {
-        return this.TYPE.toString() + "( " + this.getPointsDeVie() + "," + this.getPortee() + "," + this.getPuissance() + this.getTir()+ ")";
+        return this.TYPE.toString() + "( " + this.getPointsDeVie() + "," + this.getPortee() + "," + this.getPuissance() +","+ this.getTir()+ ")";
 
     }
 

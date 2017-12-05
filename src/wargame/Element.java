@@ -6,7 +6,7 @@ import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
 import wargame.Obstacle.TypeObstacle;
 
-public class Element {
+public class Element implements java.io.Serializable {
 	protected Position pos;
 	
 

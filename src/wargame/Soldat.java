@@ -53,17 +53,18 @@ public class Soldat extends Element implements ISoldat {
     @Override
     public void combat(Soldat soldat) {
         int puissanceAtk = 0;
-
         Random randomn = new Random();
-        System.out.println(soldat.pos.estVoisine(this.pos));
-        if(soldat.pos.estVoisine(this.pos)){
-            puissanceAtk = randomn.nextInt(this.getPuissance());
+        if(this.pos.estVoisine(soldat.pos)){
+            puissanceAtk = randomn.nextInt(this.getPuissance()+1);
 
-        }else if(this.getPorteeVisuelle() > 1){
-            puissanceAtk =  randomn.nextInt(this.getTir());
+        }else{
+            puissanceAtk =  randomn.nextInt(this.getTir()+1);
 
         }
+        System.out.println(this.toString()+" Attaque "+soldat.toString()+" Avec tir/puissance: "+puissanceAtk);
         soldat.setPointsDeVie(soldat.getPointsDeVie()-puissanceAtk);
+        System.out.println(soldat.toString()+" a subit: "+(soldat.getPointsDeVie()-puissanceAtk));
+        System.out.println(soldat.toString()+" Lui rest: "+soldat.getPointsDeVie());
         jouer = true;
 
     }
@@ -90,26 +91,20 @@ public class Soldat extends Element implements ISoldat {
      * @return true si le soldat s est dans la porte du soldat actuel
      */
     public boolean estDansLaPortee(Soldat s){
-        int tailleCarree = Carte.TAILLE_CARRE * this.getPortee();
-        Position soldatActuel = this.pos;
+        int carre = (Carte.TAILLE_CARRE -1);
+        int tailleCarree = carre * this.getPortee();
+        Position soldatA = this.pos;
         Position soldatS= s.pos;
         return (
+                ((soldatS.getX()< soldatA.getX() + tailleCarree + carre && soldatS.getX()>=soldatA.getX()+carre)
+                || (soldatS.getX()>=soldatA.getX()-tailleCarree && soldatS.getX()<soldatA.getX()) || soldatS.getX() == soldatA.getX())
+                && ((soldatS.getY()>=soldatA.getY()-tailleCarree && soldatS.getY() < soldatA.getY())
+                || ((soldatS.getY()<soldatA.getY()+tailleCarree+carre) && (soldatS.getY()>= soldatA.getY()+carre)) || soldatS.getY() == soldatA.getY())
 
-//                (pos.getY()  > 0 && pos.getX()  > 0 &&
-//                        pos.getY() < Carte.MAX_MAP_HEIGHT && pos.getX() > Carte.MAX_MAP_WIDTH  )&&
-                // si le point exist dans le rang haut ou bas
-                ((((soldatS.getY() >= soldatActuel.getY() - (tailleCarree - 1) && soldatS.getY() < soldatActuel.getY()) ||
-                        soldatS.getY() <= soldatActuel.getY() + (tailleCarree + (tailleCarree/this.getPortee())) - 1 && soldatS.getY() > soldatActuel.getY() + tailleCarree - 1)
-                        &&
-                        soldatS.getX() >= soldatActuel.getX() - (tailleCarree - 1) && soldatS.getX() < soldatActuel.getX() + (tailleCarree * (tailleCarree/this.getPortee())) - 1)
-                        ||
-                        //si le point exist dans les cotes
-                        ((soldatS.getY() > soldatActuel.getY() && soldatS.getY() <= soldatActuel.getY() + tailleCarree - 1) &&
-                                (soldatS.getX() >= soldatActuel.getX() - (tailleCarree - 1) && soldatS.getX() < soldatActuel.getX() || soldatS.getX() > soldatActuel.getX() + tailleCarree - 1 &&
-                                        soldatS.getX() <= soldatActuel.getX() + (tailleCarree * (tailleCarree/this.getPortee())) - 1))
-                )
         );
     }
+
+
 
 
 }

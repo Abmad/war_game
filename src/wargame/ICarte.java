@@ -20,5 +20,5 @@ public interface ICarte {
 
 	void jouerSoldats(PanneauJeu pj);
 
-	void toutDessiner(Graphics g);
+	void toutDessiner(Graphics g,PanneauJeu p);
 }

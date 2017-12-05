@@ -10,6 +10,7 @@ import java.awt.Shape;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.ImageObserver;
+import java.io.Serializable;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,16 +26,16 @@ import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
 import wargame.Obstacle.TypeObstacle;
 
-public class Carte implements ICarte {
+public class Carte implements ICarte,java.io.Serializable {
 
     public static final int MAX_MAP_WIDTH = 650;
     public static final int MAX_MAP_HEIGHT = 600;
     public static final int TAILLE_CARRE = 21;
+    private boolean repaintPortee = false;
 
-    Position p = new Position(0, 0);
     public LinkedList drawables = new LinkedList();
     protected ArrayList<Element> lesElements = new ArrayList();
-    private int nb;
+    protected ArrayList<Soldat> lesSoldats = new ArrayList<>();
 
     public Carte() {
         int random_obsacles = (int) (Math.random() * (Obstacle.MAX_OBSTACLE - Obstacle.MIN_OBSTACLE)) + Obstacle.MIN_OBSTACLE;
@@ -49,6 +50,7 @@ public class Carte implements ICarte {
                 Heros h = new Heros(TypesH.getTypeHAlea(), p);
                 addDrawable(h);
                 lesElements.add(h);
+                lesSoldats.add(h);
             }
         }
         for (int i = 0; i < Monstre.MAX_MONSTRES; i++) {
@@ -57,10 +59,11 @@ public class Carte implements ICarte {
                 Monstre m = new Monstre(TypesM.getTypeMAlea(), p);
                 addDrawable(m);
                 lesElements.add(m);
+                lesSoldats.add(m);
             }
         }
         Fenetre.lab1.setText("Il rest " + Heros.getNbH() + " Hero et " + Monstre.getNbM() + " Monstre");
-        nb++;
+
     }
 
     public void addDrawable(Element d) {
@@ -86,11 +89,13 @@ public class Carte implements ICarte {
 
     @Override
     /**
-     * retourn une position adj ou il n'y a pas d'obstacle[
+     * retourn une position adj ou il n'y a pas d'obstacle si il y'a un hero ou plus retourne le heros ayant les points de vies les plus bas
      */
     public Position trouvePositionJouableAlea(Position posElement) {
         ArrayList<Position> positonAdja = new ArrayList<Position>();
         ArrayList<Position> positonAdjaDispo = new ArrayList<Position>();
+        ArrayList<Position> positonHeroAdjaDispo = new ArrayList<Position>();
+        Position returnedPosition;
         positonAdja.add(new Position(posElement.getX() + 20, posElement.getY()));
         positonAdja.add(new Position(posElement.getX() + 20, posElement.getY() + 20));
         positonAdja.add(new Position(posElement.getX() + 20, posElement.getY() - 20));
@@ -101,15 +106,34 @@ public class Carte implements ICarte {
         positonAdja.add(new Position(posElement.getX(), posElement.getY() + 20));
 
         Random randomno = new Random();
-        for (Iterator<Position> i = positonAdja.iterator(); i.hasNext(); ) {
-            Position position = i.next();
-            if (!(getElement(position) instanceof Obstacle)) {
-                if (20 < position.getX() && position.getX() < 641 && position.getY() < 581 && 0 < position.getY())
-                    positonAdjaDispo.add(position);
+        for (int i = 0; i < positonAdja.size(); i++) {
+            Position position = positonAdja.get(i);
+            Element element = getElement(position);
+            if (!(element instanceof Obstacle)) {
+                if (20 < position.getX() && position.getX() < 641 && position.getY() < 581 && 0 < position.getY()) {
+                    if (element instanceof Heros)
+                        positonHeroAdjaDispo.add(position);
+                    else
+                        positonAdjaDispo.add(position);
+                }
             }
-
         }
-        return positonAdjaDispo.get(randomno.nextInt(positonAdjaDispo.size() - 1));
+        Position posHeroMinPdv;
+        if (positonHeroAdjaDispo.size() > 1) {
+            posHeroMinPdv = positonHeroAdjaDispo.get(0);
+            for (int i = 1; i < positonHeroAdjaDispo.size(); i++) {
+                Heros hero1 = (Heros) getElement(positonHeroAdjaDispo.get(i));
+                Heros hero2 = (Heros) getElement(posHeroMinPdv);
+                if (hero1.getPointsDeVie() < hero2.getPointsDeVie())
+                    posHeroMinPdv = positonHeroAdjaDispo.get(i);
+            }
+            returnedPosition = posHeroMinPdv;
+        } else if (positonHeroAdjaDispo.size() == 1)
+            returnedPosition = positonHeroAdjaDispo.get(0);
+        else {
+            returnedPosition = positonAdjaDispo.get(randomno.nextInt(positonAdjaDispo.size() - 1));
+        }
+        return returnedPosition;
     }
 
     public ArrayList<Heros> ArrayHeros() {
@@ -169,11 +193,9 @@ public class Carte implements ICarte {
                 if (hero.getPortee() > 1) {
                     if (destinationElement != null) {
                         if (destinationElement instanceof Monstre) {
-                            System.out.println(destinationElement.toString());
                             Monstre monstre = (Monstre) destinationElement;
                             System.out.println(hero.estDansLaPortee(monstre));
                             if (hero.estDansLaPortee(monstre)) {
-                                System.out.println("In Range");
                                 hero.combat(monstre);
                                 if (monstre.getPointsDeVie() > 0 && monstre.estDansLaPortee(hero))
                                     monstre.combat(hero);
@@ -192,13 +214,13 @@ public class Carte implements ICarte {
     }
 
     public void jouerSoldats(PanneauJeu pj) {
-        for (Iterator<Element> i = lesElements.iterator(); i.hasNext(); ) {
-            Element element = i.next();
+        for (int i = 0; i < lesElements.size(); i++) {
+            Element element = lesElements.get(i);
             if (element instanceof Monstre) {
                 //l'element est un monstre
                 Monstre monstre = (Monstre) element;
-                for (Iterator<Element> j = lesElements.iterator(); j.hasNext(); ) {
-                    Element otherElement = j.next();
+                for (int j = 0; j < lesElements.size(); j++) {
+                    Element otherElement = lesElements.get(j);
                     if (otherElement instanceof Heros) {
                         Heros hero = (Heros) otherElement;
                         if (monstre.estDansLaPortee(hero)) {
@@ -212,9 +234,7 @@ public class Carte implements ICarte {
                 if (!monstre.peutJouer())
                     continue;
                 Position posAlea = trouvePositionJouableAlea(monstre.pos);
-//                System.out.println(posAlea.toString());
                 Element elementAdj = getElement(posAlea);
-//                System.out.println((elementAdj == null));
                 if (elementAdj == null) {
                     deplaceSoldat(posAlea, monstre);
                 } else {
@@ -233,8 +253,8 @@ public class Carte implements ICarte {
             }
 
         }
-        for (Iterator<Element> j = lesElements.iterator(); j.hasNext(); ) {
-            Element element = j.next();
+        for (int j = 0; j < lesElements.size(); j++) {
+            Element element = lesElements.get(j);
             if (element instanceof Soldat) {
                 ((Soldat) element).setJouer(false);
             }
@@ -244,14 +264,14 @@ public class Carte implements ICarte {
 
     }
 
-    public void toutDessiner(Graphics g) {
+    public void toutDessiner(Graphics g,PanneauJeu p) {
         for (int i = 20; i < MAX_MAP_WIDTH; i = i + 20) {
             for (int j = 0; j < MAX_MAP_HEIGHT; j = j + 20) {
                 g.drawRect(i, j, TAILLE_CARRE, TAILLE_CARRE);
             }
         }
-        for (Iterator iter = drawables.iterator(); iter.hasNext(); ) {
-            Element ob = (Element) iter.next();
+        for (int i = 0; i < drawables.size(); i++) {
+            Element ob = (Element) drawables.get(i);
 
             if (ob instanceof Obstacle) {
 
@@ -260,7 +280,7 @@ public class Carte implements ICarte {
                 ((Heros) ob).seDessinerH(g, IConfig.COULEUR_HEROS);
             } else if (ob instanceof Monstre) {
 
-                ((Monstre) ob).seDessinerM(g);
+                ((Monstre) ob).seDessinerM(g,p);
 
             }
 
@@ -275,8 +295,8 @@ public class Carte implements ICarte {
      */
     public Element getElement(Position clickPosition) {
         Element selectedElement = null;
-        for (Iterator<Element> i = lesElements.iterator(); i.hasNext(); ) {
-            selectedElement = i.next();
+        for (int i = 0; i < lesElements.size(); i++) {
+            selectedElement = lesElements.get(i);
             if (clickPosition.getX() >= selectedElement.pos.getX() && clickPosition.getX() < selectedElement.pos.getX() + (TAILLE_CARRE - 1)
                     && clickPosition.getY() >= selectedElement.pos.getY() && clickPosition.getY() < selectedElement.pos.getY() + (TAILLE_CARRE - 1))
                 break;
@@ -286,5 +306,46 @@ public class Carte implements ICarte {
         return selectedElement;
     }
 
+    public void getPorteDeplacement(JPanel p, Position pos) {
 
+        Element element = getElement(pos);
+        if (element != null && element instanceof Soldat) {
+
+            System.out.println(element.toString());
+            Graphics g = p.getGraphics();
+            g.setColor(Color.GREEN);
+            if(getElement(new Position(element.pos.getX()+TAILLE_CARRE,element.pos.getY()))==null)
+            g.fillRect(element.pos.getX()+TAILLE_CARRE,element.pos.getY(),TAILLE_CARRE,TAILLE_CARRE);
+
+            if(getElement(new Position(element.pos.getX()+TAILLE_CARRE,element.pos.getY()+TAILLE_CARRE)) == null)
+            g.fillRect(element.pos.getX()+TAILLE_CARRE,element.pos.getY()+TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+
+            if(getElement(new Position(element.pos.getX()+TAILLE_CARRE,element.pos.getY()-TAILLE_CARRE)) == null)
+            g.fillRect(element.pos.getX()+TAILLE_CARRE,element.pos.getY()-TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+
+            if(getElement(new Position(element.pos.getX()-TAILLE_CARRE,element.pos.getY())) == null)
+            g.fillRect(element.pos.getX()-TAILLE_CARRE,element.pos.getY(),TAILLE_CARRE,TAILLE_CARRE);
+
+            if(getElement(new Position(element.pos.getX()-TAILLE_CARRE,element.pos.getY()+TAILLE_CARRE)) == null)
+            g.fillRect(element.pos.getX()-TAILLE_CARRE,element.pos.getY()+TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+
+            if(getElement(new Position(element.pos.getX()-TAILLE_CARRE,element.pos.getY()-TAILLE_CARRE)) == null)
+            g.fillRect(element.pos.getX()-TAILLE_CARRE,element.pos.getY()-TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+
+            if(getElement(new Position(element.pos.getX(),element.pos.getY()-TAILLE_CARRE)) == null)
+            g.fillRect(element.pos.getX(),element.pos.getY()-TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+
+            if(getElement(new Position(element.pos.getX(),element.pos.getY()+TAILLE_CARRE)) == null)
+            g.fillRect(element.pos.getX(),element.pos.getY()+TAILLE_CARRE,TAILLE_CARRE,TAILLE_CARRE);
+            repaintPortee = true;
+        } else {
+            if (repaintPortee) {
+                repaintPortee = false;
+                p.repaint();
+            }
+        }
+
+
+
+    }
 }
