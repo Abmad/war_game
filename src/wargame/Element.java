@@ -2,6 +2,7 @@ package wargame;
 
 import java.awt.Graphics;
 
+import com.sun.tools.javah.Gen;
 import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
 import wargame.Obstacle.TypeObstacle;

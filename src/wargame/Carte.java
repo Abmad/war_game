@@ -35,7 +35,7 @@ public class Carte implements ICarte, java.io.Serializable {
 
     public LinkedList drawables = new LinkedList();
     protected ArrayList<Element> lesElements = new ArrayList();
-    protected ArrayList<Soldat> lesSoldats = new ArrayList<>();
+//    protected ArrayList<Soldat> lesSoldats = new ArrayList<>();
 
     public Carte() {
         int random_obsacles = (int) (Math.random() * (Obstacle.MAX_OBSTACLE - Obstacle.MIN_OBSTACLE)) + Obstacle.MIN_OBSTACLE;
@@ -50,7 +50,7 @@ public class Carte implements ICarte, java.io.Serializable {
                 Heros h = new Heros(TypesH.getTypeHAlea(), p);
                 addDrawable(h);
                 lesElements.add(h);
-                lesSoldats.add(h);
+//                lesSoldats.add(h);
             }
         }
         for (int i = 0; i < Monstre.MAX_MONSTRES; i++) {
@@ -59,7 +59,7 @@ public class Carte implements ICarte, java.io.Serializable {
                 Monstre m = new Monstre(TypesM.getTypeMAlea(), p);
                 addDrawable(m);
                 lesElements.add(m);
-                lesSoldats.add(m);
+//                lesSoldats.add(m);
             }
         }
         Fenetre.lab1.setText("Il rest " + Heros.getNbH() + " Hero et " + Monstre.getNbM() + " Monstre");
@@ -75,10 +75,6 @@ public class Carte implements ICarte, java.io.Serializable {
 
     }
 
-    public void clear() {
-        drawables.clear();
-
-    }
 
 
     @Override

@@ -29,8 +29,8 @@ public class Heros extends Soldat implements java.io.Serializable {
         puissance = TYPE.getPuissance();
         tir = TYPE.getTir();
         porteeVisuelle = TYPE.getPortee();
-        Nom=H[nbH];
-        nbH++;
+//        Nom=H[nbH];
+//        nbH++;
     }
 
     public void seDessinerH(Graphics g, Color Couleur,PanneauJeu p) {

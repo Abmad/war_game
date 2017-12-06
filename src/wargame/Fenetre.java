@@ -3,9 +3,7 @@ package wargame;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.io.*;
 import java.util.EventListener;
 
@@ -13,19 +11,31 @@ import javax.swing.*;
 
 public class Fenetre extends JFrame implements EventListener {
 
+    public Thread mainGameMusicThread;
+    public static boolean mainGameRunned = false;
     public static JLabel lab1 = new JLabel();
-    public PanneauJeu p2;
+    public static MouseAdapter panneauJeuMouseAdapter;
+    public static PanneauJeu p2;
     public Position source = new Position();
+    Options options;
     boolean isFirstClick = true;
-    JButton btnSauvegarder = new JButton("Save");
-    JButton btnCharger = new JButton("Load");
+    JButton btnOptions = new JButton("Option");
 
-    public Fenetre() {
+    public Fenetre(PanneauJeu pj) {
+        this.setName("fenetre");
+        mainGameRunned = true;
+        mainGameMusicThread = new SoundThread("sounds/Aaron_Mist_-_06_-_Song_of_the_Sun.mp3");
+        if (Generic.soundEnabled)
+            mainGameMusicThread.start();
+        this.setVisible(true);
         this.setTitle("WarGame");
         this.setSize(Carte.MAX_MAP_WIDTH + 50, Carte.MAX_MAP_HEIGHT + 100);
-        this.setDefaultCloseOperation(3);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setResizable(false);
-         p2 = new PanneauJeu();
+        if (pj != null) {
+            p2 = pj;
+        } else
+            p2 = new PanneauJeu();
         Container cont = new Container();
         cont.setLayout(new BorderLayout());
         add(cont);
@@ -63,15 +73,13 @@ public class Fenetre extends JFrame implements EventListener {
 
             }
         });
-        MouseAdapter panneauJeuMouseAdapter = new MouseAdapter() {
+        panneauJeuMouseAdapter = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 Element element = p2.c.getElement(new Position(e.getX(), e.getY()));
                 if (element != null)
                     lab2.setText(element.toString());
                 else
                     lab2.setText("");
-
-
             }
 
             public void mousePressed(MouseEvent e) {
@@ -86,89 +94,23 @@ public class Fenetre extends JFrame implements EventListener {
                     isFirstClick = true;
                     repaint();
                 }
-
             }
 
         };
 
         p2.addMouseListener(panneauJeuMouseAdapter);
 
-        btnSauvegarder.addMouseListener(new MouseAdapter() {
+
+
+        btnOptions.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                options = new Options(Fenetre.this);
 
-                String filename = "sauvegardes/save.wg";
-
-                // Serialization
-                try
-                {
-                    //Saving of object in a file
-                    FileOutputStream file = new FileOutputStream(filename);
-                    ObjectOutputStream out = new ObjectOutputStream(file);
-
-                    // Method for serialization of object
-                    out.writeObject(p2);
-
-                    out.close();
-                    file.close();
-                    JOptionPane.showMessageDialog(null, "Sauvegarde effectuée avec succès", "Savegarde", JOptionPane.INFORMATION_MESSAGE);
-
-
-                }
-
-                catch(IOException ex)
-                {
-                    JOptionPane.showMessageDialog(null, "Une erreure est survenue veuillez resseayer", "ERROR", JOptionPane.ERROR_MESSAGE);
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-
-                }
-            }
-        });
-
-        btnCharger.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // Deserialization
-                try
-                {
-                    String filename = "sauvegardes/save.wg";
-                    // Reading the object from a file
-                    FileInputStream file = new FileInputStream(filename);
-                    ObjectInputStream in = new ObjectInputStream(file);
-
-                    // Method for deserialization of object
-                    PanneauJeu loadedGame = (PanneauJeu)in.readObject();
-
-                    in.close();
-                    file.close();
-
-                    JOptionPane.showMessageDialog(null, "Chargement reussis", "Savegarde", JOptionPane.INFORMATION_MESSAGE);
-                    cont.remove(p2);
-
-                    p2 = loadedGame;
-                    p2.addMouseListener(panneauJeuMouseAdapter);
-                    cont.add(p2, BorderLayout.CENTER);
-                    p2.repaint();
-
-                }
-
-                catch(IOException ex)
-                {
-
-                    System.out.println("IOException is caught");
-                    System.out.println(ex.getMessage());
-                }
-
-                catch(ClassNotFoundException ex)
-                {
-                    System.out.println("ClassNotFoundException is caught");
-                    System.out.println(ex.getMessage());
-                }
             }
         });
         p1.add(btnFinTour);
-        p1.add(btnCharger);
-        p1.add(btnSauvegarder);
+        p1.add(btnOptions);
         p1.add(lab1);
         p3.add(lab2);
 
@@ -176,5 +118,14 @@ public class Fenetre extends JFrame implements EventListener {
         cont.add(p2, BorderLayout.CENTER);
         cont.add(p3, BorderLayout.SOUTH);
 
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                mainGameMusicThread.stop();
+                if(options!=null)
+                options.dispose();
+            }
+        });
     }
 }

@@ -27,8 +27,8 @@ public class Monstre extends Soldat implements java.io.Serializable {
         puissance = TYPE.getPuissance();
         tir = TYPE.getTir();
         porteeVisuelle = TYPE.getPortee();
-        Nom=Mo[nbM];
-        nbM++;
+//        Nom=Mo[nbM];
+//        nbM++;
     }
 
     public void seDessinerM(Graphics g,PanneauJeu p) {
