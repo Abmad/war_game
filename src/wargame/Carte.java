@@ -1,27 +1,12 @@
 package wargame;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.ImageObserver;
-import java.io.Serializable;
-import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
-
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import javafx.geometry.Pos;
-import sun.jvm.hotspot.utilities.HashtableEntry;
 import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
 import wargame.Obstacle.TypeObstacle;
@@ -74,7 +59,6 @@ public class Carte implements ICarte, java.io.Serializable {
         drawables.remove(d);
 
     }
-
 
 
     @Override
@@ -162,6 +146,16 @@ public class Carte implements ICarte, java.io.Serializable {
     public void mort(Soldat perso) {
         removeDrawable(perso);
         lesElements.remove(perso);
+
+        if (perso instanceof Monstre) {
+            int nbMontres = Monstre.getNbM();
+            nbMontres--;
+            Monstre.setNb(nbMontres);
+        } else if (perso instanceof Heros) {
+            int nbHeros = Heros.getNbH();
+            nbHeros--;
+            Heros.setNbH(nbHeros);
+        }
 
     }
 
@@ -280,7 +274,7 @@ public class Carte implements ICarte, java.io.Serializable {
 
                 ((Obstacle) ob).seDessiner(g);
             } else if (ob instanceof Heros) {
-                ((Heros) ob).seDessinerH(g, IConfig.COULEUR_HEROS,p);
+                ((Heros) ob).seDessinerH(g, IConfig.COULEUR_HEROS, p);
             } else if (ob instanceof Monstre) {
 
                 ((Monstre) ob).seDessinerM(g, p);

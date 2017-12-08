@@ -16,7 +16,7 @@ public class PanneauJeu extends JPanel implements MouseListener,java.io.Serializ
 	public  Carte c=new Carte();
 
 	public PanneauJeu(){
-		Graphics g = this.getGraphics();
+//		Graphics g = this.getGraphics();
 
 	}
 	public void paintComponent(Graphics g) {

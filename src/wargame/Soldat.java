@@ -1,9 +1,10 @@
 package wargame;
 
 
+import javax.swing.*;
 import java.util.Random;
 
-public class Soldat extends Element implements ISoldat,java.io.Serializable {
+public class Soldat extends Element implements ISoldat, java.io.Serializable {
 
     protected boolean jouer;
     protected int pointsDeVie;
@@ -18,7 +19,7 @@ public class Soldat extends Element implements ISoldat,java.io.Serializable {
     public void setPointsDeVie(int pointsDeVie) {
 
         this.pointsDeVie = pointsDeVie;
-        if(this.getPointsDeVie() < 0)
+        if (this.getPointsDeVie() < 0)
             this.pointsDeVie = 0;
     }
 
@@ -35,7 +36,7 @@ public class Soldat extends Element implements ISoldat,java.io.Serializable {
 
     @Override
     public int getPortee() {
-        return  this.getPortee();
+        return this.getPortee();
     }
 
 
@@ -54,23 +55,37 @@ public class Soldat extends Element implements ISoldat,java.io.Serializable {
     public void combat(Soldat soldat) {
         int puissanceAtk = 0;
         Random randomn = new Random();
-        if(this.pos.estVoisine(soldat.pos)){
-            puissanceAtk = randomn.nextInt(this.getPuissance()+1);
+        String typeAtk = "";
+        if (this.pos.estVoisine(soldat.pos)) {
+            puissanceAtk = randomn.nextInt(this.getPuissance() + 1);
+            typeAtk = "puissance";
 
-        }else{
-            puissanceAtk =  randomn.nextInt(this.getTir()+1);
+        } else {
+            puissanceAtk = randomn.nextInt(this.getTir() + 1);
+            typeAtk = "tir";
 
         }
-        System.out.println(this.toString()+" Attaque "+soldat.toString()+" Avec tir/puissance: "+puissanceAtk);
-        soldat.setPointsDeVie(soldat.getPointsDeVie()-puissanceAtk);
-        System.out.println(soldat.toString()+" a subit: "+(soldat.getPointsDeVie()-puissanceAtk));
-        System.out.println(soldat.toString()+" Lui rest: "+soldat.getPointsDeVie());
+        JLabel jlog;
+        System.out.println(this.toString() + " Attaque " + soldat.toString() + " Avec " + typeAtk + ": " + puissanceAtk);
+        jlog = new JLabel(this.toString() + " Attaque " + soldat.toString() + " Avec " + typeAtk + ": " + puissanceAtk);
+        Fenetre.panelLog.add(jlog);
+        soldat.setPointsDeVie(soldat.getPointsDeVie() - puissanceAtk);
+        System.out.println(soldat.toString() + " a subit: " + puissanceAtk);
+        jlog = new JLabel(soldat.toString() + " a subit: " + puissanceAtk);
+        Fenetre.panelLog.add(jlog);
+        System.out.println(soldat.toString() + " Lui rest: " + soldat.getPointsDeVie());
+        jlog = new JLabel(soldat.toString() + " Lui rest: " + soldat.getPointsDeVie());
+        Fenetre.panelLog.add(jlog);
         jouer = true;
+
+        Fenetre.panelLog.repaint();
+
+        this.setJouer(true);
 
     }
 
-    public boolean peutJouer(){
-    return !jouer;
+    public boolean peutJouer() {
+        return !jouer;
 
     }
 
@@ -86,24 +101,22 @@ public class Soldat extends Element implements ISoldat,java.io.Serializable {
     }
 
     /**
-     *
      * @param s
      * @return true si le soldat s est dans la porte du soldat actuel
      */
-    public boolean estDansLaPortee(Soldat s){
-        int carre = (Carte.TAILLE_CARRE -1);
+    public boolean estDansLaPortee(Soldat s) {
+        int carre = (Carte.TAILLE_CARRE - 1);
         int tailleCarree = carre * this.getPortee();
         Position soldatA = this.pos;
-        Position soldatS= s.pos;
+        Position soldatS = s.pos;
         return (
-                ((soldatS.getX()< soldatA.getX() + tailleCarree + carre && soldatS.getX()>=soldatA.getX()+carre)
-                || (soldatS.getX()>=soldatA.getX()-tailleCarree && soldatS.getX()<soldatA.getX()) || soldatS.getX() == soldatA.getX())
-                && ((soldatS.getY()>=soldatA.getY()-tailleCarree && soldatS.getY() < soldatA.getY())
-                || ((soldatS.getY()<soldatA.getY()+tailleCarree+carre) && (soldatS.getY()>= soldatA.getY()+carre)) || soldatS.getY() == soldatA.getY())
+                ((soldatS.getX() < soldatA.getX() + tailleCarree + carre && soldatS.getX() >= soldatA.getX() + carre)
+                        || (soldatS.getX() >= soldatA.getX() - tailleCarree && soldatS.getX() < soldatA.getX()) || soldatS.getX() == soldatA.getX())
+                        && ((soldatS.getY() >= soldatA.getY() - tailleCarree && soldatS.getY() < soldatA.getY())
+                        || ((soldatS.getY() < soldatA.getY() + tailleCarree + carre) && (soldatS.getY() >= soldatA.getY() + carre)) || soldatS.getY() == soldatA.getY())
 
         );
     }
-
 
 
 

@@ -14,7 +14,6 @@ public class Heros extends Soldat implements java.io.Serializable {
     public static final int MAX_HEROS = 10;
     protected TypesH TYPE;
     private static int nbH = 0;
-    private int nb = 0;
     protected static int tour = 0;
     protected int Points;
     protected Carte carte;
@@ -30,7 +29,7 @@ public class Heros extends Soldat implements java.io.Serializable {
         tir = TYPE.getTir();
         porteeVisuelle = TYPE.getPortee();
 //        Nom=H[nbH];
-//        nbH++;
+        nbH++;
     }
 
     public void seDessinerH(Graphics g, Color Couleur,PanneauJeu p) {
@@ -54,8 +53,8 @@ public class Heros extends Soldat implements java.io.Serializable {
         return nbH;
     }
 
-    public void setNbH(int nbH) {
-        this.nbH = nbH;
+    public static void setNbH(int nbH) {
+        Heros.nbH = nbH;
     }
 
     public int getPoints() {
@@ -79,7 +78,9 @@ public class Heros extends Soldat implements java.io.Serializable {
     }
 
     public String toString() {
-        return this.TYPE.toString() + "( " + this.getPointsDeVie() + "," + this.getPortee() + "," + this.getPuissance() +","+ this.getTir()+ ")";
+        return this.TYPE.toString()+"\n"
+                + "PDV:" + this.getPointsDeVie() +" | PO:"+ this.getPortee() + "\n"
+                + "PS:" +this.getPuissance() +" | TIR: "+ this.getTir()+ ")";
 
     }
 

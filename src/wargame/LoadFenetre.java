@@ -31,7 +31,6 @@ public class LoadFenetre extends JFrame {
         JButton btnAnnuler = new JButton("Annuler");
         container.setBackground(Color.black);
         btnPanel.setBackground(Color.black);
-        this.setBackground(Color.black);
         File files[] = folder.listFiles();
         main.setBackground(Color.black);
         main.setLayout(new GridLayout(files.length, 1));
@@ -66,6 +65,8 @@ public class LoadFenetre extends JFrame {
         this.setSize(400, 500);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
+        this.setBackground(Color.black);
+
         btnPanel.setLayout(new GridLayout(1, 2));
         btnPanel.add(btnOk);
         btnPanel.add(btnAnnuler);
@@ -92,19 +93,26 @@ public class LoadFenetre extends JFrame {
             }
         });
 
+        btnAnnuler.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                LoadFenetre.this.dispose();
+            }
+        });
+
 
     }
-    public PanneauJeu loadGame(String filename){
+
+    public PanneauJeu loadGame(String filename) {
         PanneauJeu loadedGame = new PanneauJeu();
-        try
-        {
-             filename = "sauvegardes/"+filename;
+        try {
+            filename = "sauvegardes/" + filename;
             // Reading the object from a file
             FileInputStream file = new FileInputStream(filename);
             ObjectInputStream in = new ObjectInputStream(file);
 
             // Method for deserialization of object
-             loadedGame = (PanneauJeu)in.readObject();
+            loadedGame = (PanneauJeu) in.readObject();
 
             in.close();
             file.close();
@@ -112,17 +120,11 @@ public class LoadFenetre extends JFrame {
             JOptionPane.showMessageDialog(null, "Chargement reussis", "Savegarde", JOptionPane.INFORMATION_MESSAGE);
 
 
-        }
-
-        catch(IOException ex)
-        {
+        } catch (IOException ex) {
 
             System.out.println("IOException is caught");
             System.out.println(ex.getMessage());
-        }
-
-        catch(ClassNotFoundException ex)
-        {
+        } catch (ClassNotFoundException ex) {
             System.out.println("ClassNotFoundException is caught");
             System.out.println(ex.getMessage());
         }

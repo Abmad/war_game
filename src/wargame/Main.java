@@ -4,7 +4,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-//		Fenetre pn = new Fenetre();
+//		Fenetre pn = new Fenetre(null);
 //		pn.setVisible(true);
 //		Position p = new Position(40, 40);
 

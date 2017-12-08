@@ -19,7 +19,7 @@ public class SauvegarderFenetre extends JFrame{
     public SauvegarderFenetre()  {
         this.setTitle("Sauvegarder");
         this.setSize(300, 150);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         container.setBackground(Color.white);
