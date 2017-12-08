@@ -3,6 +3,9 @@ package wargame;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Classe qui permet de gerer les positions de tout les elements
+ */
 public class Position implements IConfig,java.io.Serializable {
     private int x, y;
     private ArrayList<Integer> x1 = new ArrayList();
@@ -11,6 +14,10 @@ public class Position implements IConfig,java.io.Serializable {
     private ArrayList<Integer> y1 = new ArrayList();
 
     //
+
+    /**
+     * initialiser les position de depalacement de la liste
+     */
     public void initlist() {
         for (int i = (Carte.TAILLE_CARRE - 1); i < Carte.MAX_MAP_WIDTH; i += (Carte.TAILLE_CARRE - 1)) {
             x1.add(i);
@@ -26,11 +33,19 @@ public class Position implements IConfig,java.io.Serializable {
         }
     }
 
+    /**
+     * Constructeur
+     * @param x
+     * @param y
+     */
     Position(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * contructeur qui genere les position des obstacels aleatoirement
+     */
     Position() {
         initlist();
         Random randomno = new Random();
@@ -38,6 +53,11 @@ public class Position implements IConfig,java.io.Serializable {
         this.setY(y1.get(randomno.nextInt(30)));
     }
 
+    /**
+     * Constructeur permet de generer les position des soldats selon leur type
+     *
+     * @param Type
+     */
     Position(String Type) {
         initlist();
         Random randomno = new Random();
@@ -53,18 +73,34 @@ public class Position implements IConfig,java.io.Serializable {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getY() {
         return y;
     }
 
+    /**
+     *
+     * @param x
+     */
     public void setX(int x) {
         this.x = x;
     }
 
+    /**
+     *
+     * @param y
+     */
     public void setY(int y) {
         this.y = y;
     }
@@ -106,6 +142,10 @@ public class Position implements IConfig,java.io.Serializable {
 
     }
 
+    /**
+     * retourn la position dessinable depuis unre position
+     * @return
+     */
     public Position positionDessinable() {
         int x = this.getX(), y = this.getY();
 

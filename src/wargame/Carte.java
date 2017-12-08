@@ -11,17 +11,24 @@ import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
 import wargame.Obstacle.TypeObstacle;
 
+/**
+ *  permet de gerer la carte du jeu
+ */
 public class Carte implements ICarte, java.io.Serializable {
 
     public static final int MAX_MAP_WIDTH = 650;
     public static final int MAX_MAP_HEIGHT = 600;
     public static final int TAILLE_CARRE = 21;
     private boolean repaintPortee = false;
-
+    /**
+     * list contenant les elements dessinable
+     */
     public LinkedList drawables = new LinkedList();
     protected ArrayList<Element> lesElements = new ArrayList();
-//    protected ArrayList<Soldat> lesSoldats = new ArrayList<>();
 
+    /**
+     * Constructeur de la classe carte
+     */
     public Carte() {
         int random_obsacles = (int) (Math.random() * (Obstacle.MAX_OBSTACLE - Obstacle.MIN_OBSTACLE)) + Obstacle.MIN_OBSTACLE;
         for (int i = 0; i < random_obsacles; i++) {
@@ -51,10 +58,18 @@ public class Carte implements ICarte, java.io.Serializable {
 
     }
 
+    /**
+     *
+     * @param d element a ajouter dans la list drawables
+     */
     public void addDrawable(Element d) {
         drawables.add(d);
     }
 
+    /**
+     *
+     * @param d element a supprimer de la list drawables
+     */
     public void removeDrawable(Element d) {
         drawables.remove(d);
 
@@ -62,15 +77,11 @@ public class Carte implements ICarte, java.io.Serializable {
 
 
     @Override
-    public Position trouvePositionVide() {
-        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-        // Tools | Templates.
-    }
-
-    @Override
     /**
+     * @param posElement position de l'element
      * retourn une position adj ou il n'y a pas d'obstacle si il y'a un hero ou plus retourne le heros ayant les points de vies les plus bas
      */
+
     public Position trouvePositionJouableAlea(Position posElement) {
         ArrayList<Position> positonAdja = new ArrayList<Position>();
         ArrayList<Position> positonAdjaDispo = new ArrayList<Position>();
@@ -128,6 +139,10 @@ public class Carte implements ICarte, java.io.Serializable {
     }
 
     @Override
+    /**
+     * @param pos position cible
+     * @param soldat le soldat a deplacer
+     */
     public boolean deplaceSoldat(Position pos, Soldat soldat) {
         pos = pos.positionDessinable();
         int diffX = pos.getX() - soldat.pos.getX();
@@ -143,6 +158,10 @@ public class Carte implements ICarte, java.io.Serializable {
         return false;
     }
 
+    /**
+     *
+     * @param perso le soldat qui va mourire ( qui a les points de vies reduient a 0)
+     */
     public void mort(Soldat perso) {
         removeDrawable(perso);
         lesElements.remove(perso);
@@ -159,20 +178,25 @@ public class Carte implements ICarte, java.io.Serializable {
 
     }
 
-    public boolean actionHeros(Position source, Position destination) {
+    /**
+     * la fonction principale pour le fonctionnnement du hero qui gere le deplacement et les attaques
+     * @param source position source
+     * @param destination position destination
+     */
+    public void actionHeros(Position source, Position destination) {
 
         Element clickedElement = getElement(source);
         Element destinationElement = getElement(destination);
         if (clickedElement != null && clickedElement instanceof Heros) {
             Soldat hero = (Soldat) clickedElement;
             if (!hero.peutJouer())
-                return false;
+                return;
             System.out.println(clickedElement.pos.estVoisine(destination));
             if (clickedElement.pos.estVoisine(destination)) {
                 if (destinationElement == null) {
                     //deplacement normal
                     deplaceSoldat(destination, hero);
-                    return true;
+                    return;
                 } else {
                     //atk un monstre dans une celulle adjacente
                     if (destinationElement instanceof Monstre) {
@@ -207,9 +231,12 @@ public class Carte implements ICarte, java.io.Serializable {
             }
         }
 
-        return false;
     }
 
+    /**
+     * permet de gerer la fin de tour le deplacement des monstre et leurs actions
+     * @param pj le panneau de jeu
+     */
     public void jouerSoldats(PanneauJeu pj) {
         for (int i = 0; i < lesElements.size(); i++) {
             Element element = lesElements.get(i);
@@ -261,6 +288,11 @@ public class Carte implements ICarte, java.io.Serializable {
 
     }
 
+    /**
+     * Permet de faire le dessin du jeu complet
+     * @param g graphics
+     * @param p panneau jeu
+     */
     public void toutDessiner(Graphics g, PanneauJeu p) {
         for (int i = 20; i < MAX_MAP_WIDTH; i = i + 20) {
             for (int j = 0; j < MAX_MAP_HEIGHT; j = j + 20) {
@@ -303,6 +335,11 @@ public class Carte implements ICarte, java.io.Serializable {
         return selectedElement;
     }
 
+    /**
+     * permet de dessiner la portee de deplacement du soldat
+     * @param p
+     * @param pos
+     */
     public void getPorteDeplacement(JPanel p, Position pos) {
 
         Element element = getElement(pos);

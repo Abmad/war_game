@@ -7,6 +7,9 @@ import java.util.EventListener;
 
 import javax.swing.*;
 
+/**
+ * La Jframe où s'affiche le jeu
+ */
 public class Fenetre extends JFrame implements EventListener {
 
     public Thread mainGameMusicThread;
@@ -63,6 +66,9 @@ public class Fenetre extends JFrame implements EventListener {
 
         p3.setLayout(new BorderLayout());
 
+//        JPanel logpanneau = new JPanel();
+//        logpanneau.setBackground(Color.black);
+//        logpanneau.setLayout(new GridLayout());
         btnFinTour.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
 
@@ -180,6 +186,7 @@ public class Fenetre extends JFrame implements EventListener {
         cont.add(p1, BorderLayout.NORTH);
         cont.add(p2, BorderLayout.CENTER);
 //        cont.add(panelLog, BorderLayout.EAST);
+//        cont.add(logpanneau,BorderLayout.EAST);
 
 
         this.addWindowListener(new WindowAdapter() {

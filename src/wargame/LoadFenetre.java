@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
+/**
+ * Classe de gestion de chargement de jeu
+ */
 public class LoadFenetre extends JFrame {
 
 
@@ -58,6 +61,16 @@ public class LoadFenetre extends JFrame {
             }
         }
 
+
+        btnOk.setForeground(Color.WHITE);
+        btnAnnuler.setForeground(Color.WHITE);
+
+        btnOk.setIcon(new ImageIcon("images/btnGreenS.png"));
+        btnOk.setBorder(BorderFactory.createEmptyBorder());
+        btnOk.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnAnnuler.setIcon(new ImageIcon("images/btnOrangeS.png"));
+        btnAnnuler.setBorder(BorderFactory.createEmptyBorder());
+        btnAnnuler.setHorizontalTextPosition(SwingConstants.CENTER);
         main.setBorder(new LineBorder(Color.YELLOW));
 //        title.setText("WARGAME");
         this.add(container);

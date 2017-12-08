@@ -9,13 +9,19 @@ import java.io.FileInputStream;
 
 import javazoom.jl.player.Player;
 
-
+/**
+ * Fenetre d'acueil du jeu
+ */
 public class Generic extends JFrame {
     public static SoundThread playMP3Thread;
     public static boolean soundEnabled = true;
     Fenetre pn;
     LoadFenetre loadFenetre;
     JButton btnOptions;
+
+    /**
+     * Constructeur de la classe
+     */
     public Generic() {
         JPanel main = new JPanel();
         Container container = new Container();

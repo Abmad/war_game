@@ -4,6 +4,9 @@ package wargame;
 import javax.swing.*;
 import java.util.Random;
 
+/**
+ * classe qui gere les soldats (Montres et heros)
+ */
 public class Soldat extends Element implements ISoldat, java.io.Serializable {
 
     protected boolean jouer;
@@ -12,10 +15,18 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
     protected int porteeVisuelle;
     protected int tir;
 
+    /**
+     * retourn les points de vie du soldat
+     * @return
+     */
     public int getPointsDeVie() {
         return pointsDeVie;
     }
 
+    /**
+     * modifie les points de vies du soldat
+     * @param pointsDeVie
+     */
     public void setPointsDeVie(int pointsDeVie) {
 
         this.pointsDeVie = pointsDeVie;
@@ -23,6 +34,10 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
             this.pointsDeVie = 0;
     }
 
+    /**
+     *  retourne la porte
+     * @return
+     */
     public int getPorteeVisuelle() {
         return porteeVisuelle;
     }
@@ -33,20 +48,29 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
         jouer = false;
     }
 
-
+    /**
+     * retourn la porte du soldat
+     * @return
+     */
     @Override
     public int getPortee() {
         return this.getPortee();
     }
 
-
+    /**
+     *  gere le deplacement du soldat
+     * @param newPos
+     */
     public void seDeplace(Position newPos) {
         this.pos = newPos;
         jouer = true;
 
     }
 
-
+    /**
+     * modifie la variable qui definit si le soldat a joue ou pas
+     * @param jouer
+     */
     public void setJouer(boolean jouer) {
         this.jouer = jouer;
     }
@@ -84,16 +108,28 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
 
     }
 
+    /**
+     * retourne la puissance du soldat
+     * @return
+     */
     public boolean peutJouer() {
         return !jouer;
 
     }
 
+    /**
+     * retourne la puissance du soldat
+     * @return
+     */
     @Override
     public int getPuissance() {
         return this.puissance;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int getTir() {
 

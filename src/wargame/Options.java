@@ -5,7 +5,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-
+/**
+ * fenetre de gestion des option du jeu ( sauvegarde, chargement, ...)
+ *
+ */
 public class Options extends JFrame {
     public static SoundThread playMP3Thread;
     public static boolean soundEnabled = true;
@@ -13,6 +16,11 @@ public class Options extends JFrame {
     SauvegarderFenetre save;
     LoadFenetre loadFenetre;
     JButton btnSon;
+
+    /**
+     * constructeur classe option
+     * @param jf fenetre
+     */
     public Options(Fenetre jf) {
 //        this.setUndecorated(true);
         caller = jf;

@@ -9,6 +9,9 @@ import wargame.ISoldat.TypesH;
 
 import javax.imageio.ImageIO;
 
+/**
+ * Classe de gestion des montres du jeu
+ */
 public class Monstre extends Soldat implements java.io.Serializable {
     public static final int MAX_MONSTRES = 15;
     protected TypesM TYPE;
@@ -31,6 +34,11 @@ public class Monstre extends Soldat implements java.io.Serializable {
         nbM++;
     }
 
+    /**
+     * gere le dessin des montres
+     * @param g
+     * @param p
+     */
     public void seDessinerM(Graphics g, PanneauJeu p) {
 
         g.setColor(IConfig.COULEUR_MONSTRES);
@@ -49,27 +57,51 @@ public class Monstre extends Soldat implements java.io.Serializable {
 
     }
 
+    /**
+     *
+     * @return le nombre de montre
+     */
     public static int getNbM() {
         return nbM;
     }
 
+    /**
+     *
+     * @param nbH Modifie le nombre des montres
+     */
     public static void setNb(int nbH) {
         Monstre.nbM = nbH;
     }
 
+    /**
+     * points return les points de vie du montre
+     * @return
+     */
     public int getPoints() {
         return (this.TYPE).getPoints();
     }
 
+    /**
+     * Modifie les points de vie du monstre
+     * @param point
+     */
     public void setPoints(int point) {
 
         Points = point;
     }
 
+    /**
+     *
+     * @return la portee du monstre
+     */
     public int getPortee() {
         return this.TYPE.getPortee();
     }
 
+    /**
+     * toString du monstre
+     * @return
+     */
     public String toString() {
         return this.TYPE.toString() + "( " + this.getPointsDeVie() + "," + this.getPortee() + "," + this.getPuissance() + "," + this.getTir() + ")";
 

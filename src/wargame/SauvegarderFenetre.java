@@ -9,6 +9,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+/**
+ * classe qyui
+ * fenetre de sauvegardw
+ */
 public class SauvegarderFenetre extends JFrame{
 
     private JPanel container = new JPanel();
@@ -16,6 +20,10 @@ public class SauvegarderFenetre extends JFrame{
     private JLabel label = new JLabel("Nom de la sauvegarde");
     final File folder = new File("sauvegardes");
     private JButton btnOK = new JButton ("OK");
+
+    /**
+     * costructeur
+     */
     public SauvegarderFenetre()  {
         this.setTitle("Sauvegarder");
         this.setSize(300, 150);

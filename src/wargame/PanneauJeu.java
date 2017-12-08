@@ -11,6 +11,9 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+/**
+ * Vlasse jpanel qui contien la carte du jeu
+ */
 public class PanneauJeu extends JPanel implements MouseListener,java.io.Serializable {
 	
 	public  Carte c=new Carte();
@@ -19,7 +22,13 @@ public class PanneauJeu extends JPanel implements MouseListener,java.io.Serializ
 //		Graphics g = this.getGraphics();
 
 	}
+
+	/**
+	 * permet de dessiner dans le jpanel
+	 * @param g
+	 */
 	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		try {
 			Image bgImage = ImageIO.read(new File("images/desert_map.png"));
 			g.drawImage(bgImage, 15, -5,Carte.MAX_MAP_WIDTH,Carte.MAX_MAP_HEIGHT+10, this);

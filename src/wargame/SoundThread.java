@@ -4,6 +4,9 @@ import javazoom.jl.player.Player;
 
 import java.io.FileInputStream;
 
+/**
+ * classe permet de gerer les sons du jeu la cl
+ */
 public class SoundThread extends Thread {
 
     private String path;
