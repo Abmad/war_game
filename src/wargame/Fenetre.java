@@ -2,8 +2,11 @@ package wargame;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.TextAttribute;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -17,32 +20,50 @@ public class Fenetre extends JFrame implements EventListener {
     public static JLabel lab1 = new JLabel();
     public static MouseAdapter panneauJeuMouseAdapter;
     public static PanneauJeu p2;
+    public static int cptNbrLogs = 1;
+    public static final int CPT_JLAB_LOG_INIT = 35;
     public Position source = new Position();
     Options options;
     boolean isFirstClick = true;
-    boolean canRepaint = false;
+    static boolean canRepaint = false;
     JButton btnOptions = new JButton("Option");
-    public static JPanel panelLog;
-    public Fenetre(PanneauJeu pj) {
+    public static JPanel panelLogContainer;
+    public static JScrollPane jsp;
 
-        panelLog = new JPanel();
-//        panelLog.setSize(500, Carte.MAX_MAP_HEIGHT - 100);
-//        panelLog.setBackground(Color.black);
-//        panelLog.setLayout(new GridLayout(1000,1));
+    public Fenetre(ArrayList panels) {
+        jsp = new JScrollPane();
+        JPanel panelLog = new JPanel();
+        if (panels != null && !panels.isEmpty() && panels.get(1) != null) {
+            panelLogContainer = (JPanel) panels.get(1);
+            cptNbrLogs = ((GridLayout) panelLogContainer.getLayout()).getRows();
+            System.out.println(cptNbrLogs);
+        } else {
+            panelLogContainer = new JPanel();
+            panelLogContainer.setLayout(new GridLayout(CPT_JLAB_LOG_INIT, 1));
+            panelLogContainer.setBackground(Color.black);
+            JLabel jlog = new JLabel("Bonne chance dans votre guerre!");
+            jlog.setForeground(Color.WHITE);
+            panelLogContainer.add(jlog);
+        }
+        jsp.setPreferredSize(new Dimension(250, Carte.MAX_MAP_HEIGHT));
+        panelLogContainer.revalidate();
+        jsp.setViewportView(panelLogContainer);
+        panelLog.add(jsp);
         this.setName("fenetre");
         mainGameRunned = true;
+        Generic.playMP3Thread.suspend();
         mainGameMusicThread = new SoundThread("sounds/Aaron_Mist_-_06_-_Song_of_the_Sun.mp3");
         if (Generic.soundEnabled)
             mainGameMusicThread.start();
         this.setVisible(true);
         this.setTitle("WarGame");
-        this.setSize(Carte.MAX_MAP_WIDTH + panelLog.getWidth() + 50, Carte.MAX_MAP_HEIGHT + 100);
+        this.setSize(Carte.MAX_MAP_WIDTH + 300, Carte.MAX_MAP_HEIGHT + 100);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
-        if (pj != null) {
-            p2 = pj;
+        if (panels != null && !panels.isEmpty() && panels.get(0) != null) {
+            p2 = (PanneauJeu) panels.get(0);
         } else
-            p2 = new PanneauJeu();
+            p2 = PanneauJeu.getInstance();
         Container cont = new Container();
         cont.setLayout(new BorderLayout());
         add(cont);
@@ -66,13 +87,21 @@ public class Fenetre extends JFrame implements EventListener {
 
         p3.setLayout(new BorderLayout());
 
-//        JPanel logpanneau = new JPanel();
-//        logpanneau.setBackground(Color.black);
-//        logpanneau.setLayout(new GridLayout());
         btnFinTour.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
+                Fenetre.__add_message_to_jlabel("=== Fin de Votre tour ===");
+                Fenetre.__add_message_to_jlabel("Le Tour des montres ");
+                Fenetre.cptNbrLogs += 2;
+                p2.c.jouerSoldats(p2);      // tour des monstres
+                Fenetre.__add_message_to_jlabel("=== A vous de jouer! ===");
+                Fenetre.cptNbrLogs++;
+                if (Fenetre.cptNbrLogs > Fenetre.CPT_JLAB_LOG_INIT) {
+                    Fenetre.panelLogContainer.setLayout(new GridLayout(Fenetre.cptNbrLogs, 1));
+                }
+                Fenetre.p2.revalidate();
+                JScrollBar vertical = Fenetre.jsp.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
 
-                p2.c.jouerSoldats(p2);      //deplacer le monste
             }
 
             public void mousePressed(MouseEvent e) {
@@ -107,9 +136,11 @@ public class Fenetre extends JFrame implements EventListener {
                 if (isFirstClick) {
                     source = new Position(e.getX(), e.getY());
                     Element element = p2.c.getElement(source);
+                    p2.c.drawPorteDeplacement(p2, new Position(e.getX(), e.getY()));
                     if (element != null && element instanceof Heros)
                         isFirstClick = false;
                 } else {
+                    p2.c.porteDeplacement.clear();
                     Position destination = new Position(e.getX(), e.getY());
                     p2.c.actionHeros(source, destination);
                     isFirstClick = true;
@@ -128,44 +159,8 @@ public class Fenetre extends JFrame implements EventListener {
             public void mouseMoved(MouseEvent e) {
                 Graphics g = p2.getGraphics();
                 Element element = p2.c.getElement(new Position(e.getX(), e.getY()));
-                if (element != null) {
-                    if(element instanceof Obstacle) {
-                        g.setColor(Color.black);
-                        g.fillRect(element.pos.getX() - 30, element.pos.getY() - 60, 100, 50);
-                        g.setColor(Color.white);
-                        g.drawString(element.toString(), (element.pos.getX()), (element.pos.getY() - 30));
-                        canRepaint = true;
-                    }else {
-                        String classe;
-                        String pdvPo;
-                        String psTir;
-                        if(element instanceof Heros) {
-                            Heros hero = (Heros) element;
-                            classe = "Classe: " + hero.TYPE.toString();
-                            pdvPo = "PDV: " + hero.getPointsDeVie() + " | PO: " + hero.getPortee();
-                            psTir = "PSS: " + hero.getPuissance() + " | TIR: " + hero.getTir();
+                showStates(element, g);
 
-                        }else {
-                            Monstre monstre = (Monstre) element;
-                            classe = "  " + monstre.TYPE.toString();
-                            pdvPo = "PDV: " + monstre.getPointsDeVie() + " | PO: " + monstre.getPortee();
-                            psTir = "PSS: " + monstre.getPuissance() + " | TIR: " + monstre.getTir();
-                        }
-                        g.setColor(Color.black);
-                        g.fillRect(element.pos.getX() - 30, element.pos.getY() - 65, 120, 60);
-                        g.setColor(Color.white);
-                        g.drawString(classe, (element.pos.getX()-20), (element.pos.getY() - 50));
-                        g.drawString(pdvPo, (element.pos.getX()-20), (element.pos.getY() - 30));
-                        g.drawString(psTir, (element.pos.getX()-20), (element.pos.getY() - 10));
-                        canRepaint = true;
-
-                    }
-                }else{
-                    if(canRepaint) {
-                        p2.repaint();
-                        canRepaint = false;
-                    }
-                }
             }
         });
 
@@ -185,8 +180,7 @@ public class Fenetre extends JFrame implements EventListener {
 
         cont.add(p1, BorderLayout.NORTH);
         cont.add(p2, BorderLayout.CENTER);
-//        cont.add(panelLog, BorderLayout.EAST);
-//        cont.add(logpanneau,BorderLayout.EAST);
+        cont.add(panelLog, BorderLayout.EAST);
 
 
         this.addWindowListener(new WindowAdapter() {
@@ -199,5 +193,98 @@ public class Fenetre extends JFrame implements EventListener {
 
             }
         });
+    }
+
+    public static void __add_message_to_jlabel(String message) {
+        JLabel jlog;
+        jlog = new JLabel(message);
+        jlog.setForeground(Color.WHITE);
+        Fenetre.panelLogContainer.add(jlog);
+    }
+
+    public static void __add_message_to_jlabel(String message, Soldat soldat) {
+        JLabel jlog;
+        jlog = new JLabel(message);
+        jlog.setForeground(Color.WHITE);
+        Font font = jlog.getFont();
+        Map attributes = font.getAttributes();
+        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        jlog.setFont(font.deriveFont(attributes));
+        Soldat s = soldat;
+        jlog.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent e) {
+                p2.repaint();
+            }
+        });
+        jlog.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                showStates(s, p2.getGraphics());
+
+            }
+        });
+
+        Fenetre.panelLogContainer.add(jlog);
+
+    }
+
+    public static void showStates(Element element, Graphics g) {
+        if (element != null) {
+            if (element instanceof Obstacle) {
+                if(element.pos.getY()>60) {
+                    g.setColor(Color.black);
+                    g.fillRect(element.pos.getX() - 30, element.pos.getY() - 60, 100, 50);
+                    g.setColor(Color.white);
+                    g.drawString(element.toString(), (element.pos.getX()), (element.pos.getY() - 30));
+                }
+                else {
+                    g.setColor(Color.black);
+                    g.fillRect(element.pos.getX() - 30, element.pos.getY() + 20, 100, 50);
+                    g.setColor(Color.white);
+                    g.drawString(element.toString(), (element.pos.getX()), (element.pos.getY() + 50));
+                }
+                canRepaint = true;
+            } else {
+                String classe;
+                String pdvPo;
+                String psTir;
+                if (element instanceof Heros) {
+                    Heros hero = (Heros) element;
+                    classe = "Classe: " + hero.TYPE.toString();
+                    pdvPo = "PDV: " + hero.getPointsDeVie() + " | PO: " + hero.getPortee();
+                    psTir = "PSS: " + hero.getPuissance() + " | TIR: " + hero.getTir();
+
+                } else {
+                    Monstre monstre = (Monstre) element;
+                    classe = "  " + monstre.TYPE.toString();
+                    pdvPo = "PDV: " + monstre.getPointsDeVie() + " | PO: " + monstre.getPortee();
+                    psTir = "PSS: " + monstre.getPuissance() + " | TIR: " + monstre.getTir();
+                }
+
+                if(element.pos.getY()>65) {
+                    g.setColor(Color.black);
+                    g.fillRect(element.pos.getX() - 30, element.pos.getY() - 65, 120, 60);
+                    g.setColor(Color.white);
+                    g.drawString(classe, (element.pos.getX() - 20), (element.pos.getY() - 50));
+                    g.drawString(pdvPo, (element.pos.getX() - 20), (element.pos.getY() - 30));
+                    g.drawString(psTir, (element.pos.getX() - 20), (element.pos.getY() - 10));
+                }else{
+                    g.setColor(Color.black);
+                    g.fillRect(element.pos.getX() - 30, element.pos.getY() + 20, 120, 60);
+                    g.setColor(Color.white);
+                    g.drawString(classe, (element.pos.getX() - 20), (element.pos.getY() + 35));
+                    g.drawString(pdvPo, (element.pos.getX() - 20), (element.pos.getY() + 55));
+                    g.drawString(psTir, (element.pos.getX() - 20), (element.pos.getY() + 70));
+                }
+                canRepaint = true;
+
+            }
+        } else {
+            if (canRepaint) {
+                p2.repaint();
+                canRepaint = false;
+            }
+        }
     }
 }

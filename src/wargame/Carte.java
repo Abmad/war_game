@@ -5,14 +5,15 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
-import javax.swing.JPanel;
+import javax.swing.*;
 
+import com.sun.tools.javah.Gen;
 import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
 import wargame.Obstacle.TypeObstacle;
 
 /**
- *  permet de gerer la carte du jeu
+ * permet de gerer la carte du jeu
  */
 public class Carte implements ICarte, java.io.Serializable {
 
@@ -25,11 +26,14 @@ public class Carte implements ICarte, java.io.Serializable {
      */
     public LinkedList drawables = new LinkedList();
     protected ArrayList<Element> lesElements = new ArrayList();
+    protected ArrayList<Position> porteDeplacement = new ArrayList<>();
 
     /**
      * Constructeur de la classe carte
      */
     public Carte() {
+        Heros.setNbH(0);
+        Monstre.setNb(0);
         int random_obsacles = (int) (Math.random() * (Obstacle.MAX_OBSTACLE - Obstacle.MIN_OBSTACLE)) + Obstacle.MIN_OBSTACLE;
         for (int i = 0; i < random_obsacles; i++) {
             Obstacle o = new Obstacle(TypeObstacle.getObstacleAlea(), new Position());
@@ -59,7 +63,6 @@ public class Carte implements ICarte, java.io.Serializable {
     }
 
     /**
-     *
      * @param d element a ajouter dans la list drawables
      */
     public void addDrawable(Element d) {
@@ -67,7 +70,6 @@ public class Carte implements ICarte, java.io.Serializable {
     }
 
     /**
-     *
      * @param d element a supprimer de la list drawables
      */
     public void removeDrawable(Element d) {
@@ -159,28 +161,58 @@ public class Carte implements ICarte, java.io.Serializable {
     }
 
     /**
-     *
      * @param perso le soldat qui va mourire ( qui a les points de vies reduient a 0)
      */
     public void mort(Soldat perso) {
+        boolean finJeu = false;
+        String message = "";
         removeDrawable(perso);
         lesElements.remove(perso);
-
         if (perso instanceof Monstre) {
             int nbMontres = Monstre.getNbM();
             nbMontres--;
             Monstre.setNb(nbMontres);
+            if (nbMontres == 0) {
+                finJeu = true;
+                message = "Vous avez gagner! vous avez rendu la paix dans le monde!";
+
+            }
         } else if (perso instanceof Heros) {
             int nbHeros = Heros.getNbH();
             nbHeros--;
             Heros.setNbH(nbHeros);
+            if (nbHeros == 0) {
+                finJeu = true;
+                message = "Dommage! Vous avez perdu! Essayer une nouvelle partie?";
+            }
         }
+        Fenetre.__add_message_to_jlabel(perso.toString());
+        Fenetre.__add_message_to_jlabel("| est mort!");
+        Fenetre.cptNbrLogs += 2;
+        Fenetre.p2.revalidate();
+        Fenetre.lab1.setText("Il reste " + Heros.getNbH() + " Hero et " + Monstre.getNbM() + " Monstre");
+        Fenetre.lab1.revalidate();
+        if (finJeu) {
+            String[] options = {"Nouvelle partie", "Quitter"};
+            int result = JOptionPane.showOptionDialog(null, message, "Fin de partie"
+                    , JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            if (result == 1) {
+                System.exit(0);
+            } else {
+                Generic.pn.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                Generic.pn.dispose();
+                Generic.pn = new Fenetre(null);
+                Generic.pn.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            }
+        }
+
 
     }
 
     /**
      * la fonction principale pour le fonctionnnement du hero qui gere le deplacement et les attaques
-     * @param source position source
+     *
+     * @param source      position source
      * @param destination position destination
      */
     public void actionHeros(Position source, Position destination) {
@@ -191,7 +223,6 @@ public class Carte implements ICarte, java.io.Serializable {
             Soldat hero = (Soldat) clickedElement;
             if (!hero.peutJouer())
                 return;
-            System.out.println(clickedElement.pos.estVoisine(destination));
             if (clickedElement.pos.estVoisine(destination)) {
                 if (destinationElement == null) {
                     //deplacement normal
@@ -215,7 +246,6 @@ public class Carte implements ICarte, java.io.Serializable {
                     if (destinationElement != null) {
                         if (destinationElement instanceof Monstre) {
                             Monstre monstre = (Monstre) destinationElement;
-                            System.out.println(hero.estDansLaPortee(monstre));
                             if (hero.estDansLaPortee(monstre)) {
                                 hero.combat(monstre);
                                 if (monstre.getPointsDeVie() > 0 && monstre.estDansLaPortee(hero))
@@ -235,6 +265,7 @@ public class Carte implements ICarte, java.io.Serializable {
 
     /**
      * permet de gerer la fin de tour le deplacement des monstre et leurs actions
+     *
      * @param pj le panneau de jeu
      */
     public void jouerSoldats(PanneauJeu pj) {
@@ -283,13 +314,13 @@ public class Carte implements ICarte, java.io.Serializable {
                 ((Soldat) element).setJouer(false);
             }
         }
-        System.out.println("end jouser soldat");
         pj.repaint();
 
     }
 
     /**
      * Permet de faire le dessin du jeu complet
+     *
      * @param g graphics
      * @param p panneau jeu
      */
@@ -314,6 +345,10 @@ public class Carte implements ICarte, java.io.Serializable {
             }
 
         }
+        for(int i=0;i<porteDeplacement.size();i++){
+            g.setColor(new Color(155,240,161));
+            g.fillRect(porteDeplacement.get(i).getX(), porteDeplacement.get(i).getY() , TAILLE_CARRE-1, TAILLE_CARRE-1);
+        }
 
     }
 
@@ -337,40 +372,87 @@ public class Carte implements ICarte, java.io.Serializable {
 
     /**
      * permet de dessiner la portee de deplacement du soldat
+     *
      * @param p
      * @param pos
      */
-    public void getPorteDeplacement(JPanel p, Position pos) {
-
+    public void drawPorteDeplacement(JPanel p, Position pos) {
         Element element = getElement(pos);
-        if (element != null && element instanceof Soldat) {
+        porteDeplacement.clear();
+        if (element != null && element instanceof Heros) {
 
-//            System.out.println(element.toString());
+            // System.out.println(element.toString());
             Graphics g = p.getGraphics();
-            g.setColor(Color.GREEN);
-            if (getElement(new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY())) == null)
-                g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY(), TAILLE_CARRE, TAILLE_CARRE);
+            g.setColor(new Color(155,240,161));
+            if (getElement(new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY())) == null) {
+                if (20 < element.pos.getX() + TAILLE_CARRE && element.pos.getX() + TAILLE_CARRE < 641
+                        && element.pos.getY() < 581) {
+                    porteDeplacement.add(new Position(element.pos.getX() + TAILLE_CARRE,element.pos.getY()));
+                    g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY(), TAILLE_CARRE-1, TAILLE_CARRE-1);
+                }
+            }
 
-            if (getElement(new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE)) == null)
-                g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
+            if (getElement(
+                    new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE)) == null) {
+                if (20 < element.pos.getX() + TAILLE_CARRE && element.pos.getX() + TAILLE_CARRE < 641
+                        && element.pos.getY() + TAILLE_CARRE < 581) {
+                    porteDeplacement.add(new Position(element.pos.getX() + TAILLE_CARRE,element.pos.getY() + TAILLE_CARRE));
+                    g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE-1,
+                            TAILLE_CARRE-1);
+                }
+            }
 
-            if (getElement(new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE)) == null)
-                g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
+            if (getElement(
+                    new Position(element.pos.getX() + TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE + 10)) == null) {
+                if (20 < element.pos.getX() + TAILLE_CARRE && element.pos.getX() + TAILLE_CARRE < 641
+                        && element.pos.getY() - TAILLE_CARRE < 581) {
+                    porteDeplacement.add(new Position(element.pos.getX() + TAILLE_CARRE,element.pos.getY() - TAILLE_CARRE));
+                    g.fillRect(element.pos.getX() + TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE-1,
+                            TAILLE_CARRE-1);
+                }
+            }
 
-            if (getElement(new Position(element.pos.getX() - TAILLE_CARRE, element.pos.getY())) == null)
-                g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY(), TAILLE_CARRE, TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX() - TAILLE_CARRE + 10, element.pos.getY())) == null) {
+                if (20 < element.pos.getX() - TAILLE_CARRE && element.pos.getX() - TAILLE_CARRE < 641
+                        && element.pos.getY() < 581) {
+                    porteDeplacement.add(new Position(element.pos.getX() - TAILLE_CARRE,element.pos.getY()));
+                    g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY(), TAILLE_CARRE-1, TAILLE_CARRE-1);
+                }
+            }
 
-            if (getElement(new Position(element.pos.getX() - TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE)) == null)
-                g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
+            if (getElement(
+                    new Position(element.pos.getX() - TAILLE_CARRE + 10, element.pos.getY() + TAILLE_CARRE)) == null) {
+                if (20 < element.pos.getX() - TAILLE_CARRE && element.pos.getX() - TAILLE_CARRE < 641
+                        && element.pos.getY() + TAILLE_CARRE < 581) {
+                    porteDeplacement.add(new Position(element.pos.getX() - TAILLE_CARRE,element.pos.getY() + TAILLE_CARRE));
+                    g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE-1,
+                            TAILLE_CARRE-1);
+                }
+            }
 
-            if (getElement(new Position(element.pos.getX() - TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE)) == null)
-                g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX() - TAILLE_CARRE + 10,
+                    element.pos.getY() - TAILLE_CARRE + 10)) == null) {
+                if (20 < element.pos.getX() - TAILLE_CARRE && element.pos.getX() - TAILLE_CARRE < 641
+                        && element.pos.getY() - TAILLE_CARRE < 581) {
+                    porteDeplacement.add(new Position(element.pos.getX() - TAILLE_CARRE,element.pos.getY() - TAILLE_CARRE));
+                    g.fillRect(element.pos.getX() - TAILLE_CARRE, element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE-1,
+                            TAILLE_CARRE-1);
+                }
+            }
 
-            if (getElement(new Position(element.pos.getX(), element.pos.getY() - TAILLE_CARRE)) == null)
-                g.fillRect(element.pos.getX(), element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX(), element.pos.getY() - TAILLE_CARRE + 10)) == null) {
+                if (20 < element.pos.getX() && element.pos.getX() < 641 && element.pos.getY() - TAILLE_CARRE < 581) {
+                    porteDeplacement.add(new Position(element.pos.getX(),element.pos.getY() - TAILLE_CARRE));
+                    g.fillRect(element.pos.getX(), element.pos.getY() - TAILLE_CARRE, TAILLE_CARRE-1, TAILLE_CARRE-1);
+                }
+            }
 
-            if (getElement(new Position(element.pos.getX(), element.pos.getY() + TAILLE_CARRE)) == null)
-                g.fillRect(element.pos.getX(), element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE, TAILLE_CARRE);
+            if (getElement(new Position(element.pos.getX(), element.pos.getY() + TAILLE_CARRE)) == null) {
+                if (20 < element.pos.getX() && element.pos.getX() < 641 && element.pos.getY() + TAILLE_CARRE < 581) {
+                    porteDeplacement.add(new Position(element.pos.getX(),element.pos.getY() + TAILLE_CARRE));
+                    g.fillRect(element.pos.getX(), element.pos.getY() + TAILLE_CARRE, TAILLE_CARRE-1, TAILLE_CARRE-1);
+                }
+            }
             repaintPortee = true;
         } else {
             if (repaintPortee) {
@@ -378,7 +460,6 @@ public class Carte implements ICarte, java.io.Serializable {
                 p.repaint();
             }
         }
-
 
     }
 }

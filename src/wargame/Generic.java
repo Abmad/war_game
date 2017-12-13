@@ -15,7 +15,7 @@ import javazoom.jl.player.Player;
 public class Generic extends JFrame {
     public static SoundThread playMP3Thread;
     public static boolean soundEnabled = true;
-    Fenetre pn;
+    public static Fenetre pn;
     LoadFenetre loadFenetre;
     JButton btnOptions;
 

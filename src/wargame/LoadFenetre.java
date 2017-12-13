@@ -26,6 +26,7 @@ public class LoadFenetre extends JFrame {
         caller = fp;
         this.setUndecorated(true);
         JPanel btnPanel = new JPanel();
+        JPanel panelContainer = new JPanel();
         JPanel main = new JPanel();
         Container container = new Container();
         container.setLayout(new BorderLayout());
@@ -36,7 +37,15 @@ public class LoadFenetre extends JFrame {
         btnPanel.setBackground(Color.black);
         File files[] = folder.listFiles();
         main.setBackground(Color.black);
-        main.setLayout(new GridLayout(files.length, 1));
+        JScrollPane jsp = new JScrollPane();
+        if (files.length >= 7)
+            main.setLayout(new GridLayout(files.length, 1));
+        else
+            main.setLayout(new GridLayout(7, 1));
+
+
+        jsp.setPreferredSize(new Dimension(300, 350));
+        jsp.setViewportView(main);
         main.setBorder(BorderFactory.createEmptyBorder(25, 50, 25, 50));
         for (final File fileEntry : files) {
             if (fileEntry.isDirectory()) {
@@ -54,7 +63,6 @@ public class LoadFenetre extends JFrame {
                 btnGame.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        System.out.println("Im here");
                         saveName = ((JButton) e.getSource()).getName();
                     }
                 });
@@ -79,28 +87,32 @@ public class LoadFenetre extends JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setBackground(Color.black);
+        panelContainer.setBackground(Color.black);
 
         btnPanel.setLayout(new GridLayout(1, 2));
         btnPanel.add(btnOk);
         btnPanel.add(btnAnnuler);
 
         btnPanel.setBorder(BorderFactory.createEmptyBorder(25, 50, 25, 50));
-        container.add(main, BorderLayout.CENTER);
+//        panelContainer.add(main);
+        panelContainer.add(jsp);
+        container.add(panelContainer, BorderLayout.CENTER);
         container.add(btnPanel, BorderLayout.SOUTH);
         this.setVisible(true);
 
         btnOk.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                PanneauJeu pnl = loadGame(saveName);
+                ArrayList panels = (ArrayList) loadGame(saveName);
                 if (caller != null && "fenetre".equals(caller.getName())) {
                     caller.dispose();
-                    Fenetre fn = new Fenetre(pnl);
-                    LoadFenetre.this.dispose();
-                } else {
-                    Fenetre fn = new Fenetre(pnl);
-                    LoadFenetre.this.dispose();
                 }
+                Fenetre fn = new Fenetre(panels);
+                LoadFenetre.this.dispose();
+//                } else {
+//                    Fenetre fn = new Fenetre(pnl);
+//                    LoadFenetre.this.dispose();
+//                }
 
                 System.out.println(saveName);
             }
@@ -116,8 +128,8 @@ public class LoadFenetre extends JFrame {
 
     }
 
-    public PanneauJeu loadGame(String filename) {
-        PanneauJeu loadedGame = new PanneauJeu();
+    public ArrayList loadGame(String filename) {
+        ArrayList loadedGame = new ArrayList();
         try {
             filename = "sauvegardes/" + filename;
             // Reading the object from a file
@@ -125,7 +137,7 @@ public class LoadFenetre extends JFrame {
             ObjectInputStream in = new ObjectInputStream(file);
 
             // Method for deserialization of object
-            loadedGame = (PanneauJeu) in.readObject();
+            loadedGame = (ArrayList) in.readObject();
 
             in.close();
             file.close();

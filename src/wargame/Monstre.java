@@ -29,6 +29,7 @@ public class Monstre extends Soldat implements java.io.Serializable {
         pointsDeVie = TYPE.getPoints();
         puissance = TYPE.getPuissance();
         tir = TYPE.getTir();
+        super.type = TYPE.toString();
         porteeVisuelle = TYPE.getPortee();
 //        Nom=Mo[nbM];
         nbM++;

@@ -1,5 +1,7 @@
 package wargame;
 
+import javax.swing.*;
+
 /**
  * Main du projet
  */

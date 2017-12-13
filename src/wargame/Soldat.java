@@ -2,6 +2,7 @@ package wargame;
 
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Random;
 
 /**
@@ -14,9 +15,12 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
     protected int puissance;
     protected int porteeVisuelle;
     protected int tir;
+    protected String type;
+
 
     /**
      * retourn les points de vie du soldat
+     *
      * @return
      */
     public int getPointsDeVie() {
@@ -25,6 +29,7 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
 
     /**
      * modifie les points de vies du soldat
+     *
      * @param pointsDeVie
      */
     public void setPointsDeVie(int pointsDeVie) {
@@ -35,13 +40,17 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
     }
 
     /**
-     *  retourne la porte
+     * retourne la porte
+     *
      * @return
      */
     public int getPorteeVisuelle() {
         return porteeVisuelle;
     }
 
+    public String getType() {
+        return type;
+    }
 
     public Soldat(Position posi) {
         super(posi);
@@ -50,6 +59,7 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
 
     /**
      * retourn la porte du soldat
+     *
      * @return
      */
     @Override
@@ -58,7 +68,8 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
     }
 
     /**
-     *  gere le deplacement du soldat
+     * gere le deplacement du soldat
+     *
      * @param newPos
      */
     public void seDeplace(Position newPos) {
@@ -69,6 +80,7 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
 
     /**
      * modifie la variable qui definit si le soldat a joue ou pas
+     *
      * @param jouer
      */
     public void setJouer(boolean jouer) {
@@ -80,7 +92,8 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
         int puissanceAtk = 0;
         Random randomn = new Random();
         String typeAtk = "";
-        if (this.pos.estVoisine(soldat.pos)) {
+//        System.out.println(this.toString()+this.pos.estVoisine(soldat.pos));
+        if (this.pos.estVoisine(soldat.pos) || soldat.pos.estVoisine(this.pos)) {
             puissanceAtk = randomn.nextInt(this.getPuissance() + 1);
             typeAtk = "puissance";
 
@@ -89,27 +102,31 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
             typeAtk = "tir";
 
         }
-        JLabel jlog;
-        System.out.println(this.toString() + " Attaque " + soldat.toString() + " Avec " + typeAtk + ": " + puissanceAtk);
-        jlog = new JLabel(this.toString() + " Attaque " + soldat.toString() + " Avec " + typeAtk + ": " + puissanceAtk);
-        Fenetre.panelLog.add(jlog);
+        Fenetre.cptNbrLogs += 8;
+        if (Fenetre.cptNbrLogs > Fenetre.CPT_JLAB_LOG_INIT) {
+            Fenetre.panelLogContainer.setLayout(new GridLayout(Fenetre.cptNbrLogs, 1));
+        }
+        Fenetre.__add_message_to_jlabel("| "+this.toString(),this);
+        Fenetre.__add_message_to_jlabel("| | Attaque");
+        Fenetre.__add_message_to_jlabel("| | " + soldat.getType(),soldat);
+        Fenetre.__add_message_to_jlabel("| | Avec " + typeAtk + ": " + puissanceAtk);
         soldat.setPointsDeVie(soldat.getPointsDeVie() - puissanceAtk);
-        System.out.println(soldat.toString() + " a subit: " + puissanceAtk);
-        jlog = new JLabel(soldat.toString() + " a subit: " + puissanceAtk);
-        Fenetre.panelLog.add(jlog);
-        System.out.println(soldat.toString() + " Lui rest: " + soldat.getPointsDeVie());
-        jlog = new JLabel(soldat.toString() + " Lui rest: " + soldat.getPointsDeVie());
-        Fenetre.panelLog.add(jlog);
+        Fenetre.__add_message_to_jlabel("| | " + soldat.getType(),soldat);
+        Fenetre.__add_message_to_jlabel("| | Subit: " + puissanceAtk);
+        Fenetre.__add_message_to_jlabel("| | Lui rest: " + soldat.getPointsDeVie());
+        Fenetre.__add_message_to_jlabel("|____________________");
         jouer = true;
 
-        Fenetre.panelLog.repaint();
-
+        Fenetre.panelLogContainer.revalidate();
+        JScrollBar sb = Fenetre.jsp.getVerticalScrollBar();
+        sb.setValue(sb.getMaximum());
         this.setJouer(true);
 
     }
 
     /**
      * retourne la puissance du soldat
+     *
      * @return
      */
     public boolean peutJouer() {
@@ -119,6 +136,7 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
 
     /**
      * retourne la puissance du soldat
+     *
      * @return
      */
     @Override
@@ -127,7 +145,6 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -153,7 +170,6 @@ public class Soldat extends Element implements ISoldat, java.io.Serializable {
 
         );
     }
-
 
 
 }

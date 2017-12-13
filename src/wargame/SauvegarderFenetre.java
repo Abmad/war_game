@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 /**
  * classe qyui
@@ -77,7 +78,10 @@ public class SauvegarderFenetre extends JFrame{
                     ObjectOutputStream out = new ObjectOutputStream(file);
 
                     // Method for serialization of object
-                    out.writeObject(Fenetre.p2);
+                    ArrayList list = new ArrayList();
+                    list.add(Fenetre.p2);
+                    list.add(Fenetre.panelLogContainer);
+                    out.writeObject(list);
 
                     out.close();
                     file.close();

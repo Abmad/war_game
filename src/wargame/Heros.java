@@ -22,10 +22,11 @@ public class Heros extends Soldat implements java.io.Serializable {
     protected Carte carte;
     private String Nom;
     private String H[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
-        "S", "T", "U", "V", "W", "X", "Z"};
+            "S", "T", "U", "V", "W", "X", "Z"};
 
     /**
      * Constructeur de la classe Hero
+     *
      * @param type
      * @param pos
      */
@@ -36,30 +37,33 @@ public class Heros extends Soldat implements java.io.Serializable {
         puissance = TYPE.getPuissance();
         tir = TYPE.getTir();
         porteeVisuelle = TYPE.getPortee();
+        super.type = TYPE.toString();
 //        Nom=H[nbH];
         nbH++;
     }
 
     /**
      * Permet de dessiner le heros
+     *
      * @param g
      * @param Couleur
      * @param p
      */
-    public void seDessinerH(Graphics g, Color Couleur,PanneauJeu p) {
+    public void seDessinerH(Graphics g, Color Couleur, PanneauJeu p) {
         g.setColor(Couleur);
         g.setColor(Color.white);
         try {
             Image bgImage = ImageIO.read(new File(this.TYPE.getICONE()));
-            g.drawImage(bgImage, pos.getX() , pos.getY(),Carte.TAILLE_CARRE,Carte.TAILLE_CARRE,p);
-        }catch (IOException ex){
+            g.drawImage(bgImage, pos.getX(), pos.getY(), Carte.TAILLE_CARRE, Carte.TAILLE_CARRE, p);
+        } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
 
     }
 
     /**
-     *   getter du Nombre de heros
+     * getter du Nombre de heros
+     *
      * @return
      */
     public static int getNbH() {
@@ -67,7 +71,8 @@ public class Heros extends Soldat implements java.io.Serializable {
     }
 
     /**
-     *  setter du Nombre de heros
+     * setter du Nombre de heros
+     *
      * @param nbH
      */
     public static void setNbH(int nbH) {
@@ -75,7 +80,6 @@ public class Heros extends Soldat implements java.io.Serializable {
     }
 
     /**
-     *
      * @return les points d'un heros
      */
     public int getPoints() {
@@ -84,7 +88,6 @@ public class Heros extends Soldat implements java.io.Serializable {
     }
 
     /**
-     *
      * @param point
      */
     public void setPoints(int point) {
@@ -93,16 +96,16 @@ public class Heros extends Soldat implements java.io.Serializable {
     }
 
     /**
-     *
      * @return la portee d'un hero
      */
     public int getPortee() {
-        return this.TYPE.getPortee();																		// Tools | Templates.
+        return this.TYPE.getPortee();                                                                        // Tools | Templates.
     }
 
 
     /**
      * gere le deplacement de l'hero
+     *
      * @param newPos position cible
      */
     public void seDeplace(Position newPos) {
@@ -111,26 +114,38 @@ public class Heros extends Soldat implements java.io.Serializable {
     }
 
     /**
-     *  toString de la classe heros
+     * toString de la classe heros
+     *
      * @return
      */
     public String toString() {
-        return this.TYPE.toString()+"\n"
-                + "PDV:" + this.getPointsDeVie() +" | PO:"+ this.getPortee() + "\n"
-                + "PS:" +this.getPuissance() +" | TIR: "+ this.getTir()+ ")";
+        return this.TYPE.toString() + "\n"
+                + "PDV:" + this.getPointsDeVie() + " | PO:" + this.getPortee() + "\n"
+                + "PS:" + this.getPuissance() + " | TIR: " + this.getTir() + ")";
 
     }
 
     /**
-     *  gere le repos du heros
+     * gere le repos du heros
      */
-    public void seReposer(){
+    public void seReposer() {
+
         int pdv = this.getPointsDeVie();
         pdv += 5;
-        if(pdv >= this.TYPE.getPoints())
-            pdv = this.TYPE.getPoints();
-        this.setPointsDeVie(pdv);
+        if (this.getPointsDeVie() < this.TYPE.getPoints()) {
+            Fenetre.__add_message_to_jlabel("| " + this.TYPE.toString() + " se repose", this);
+            Fenetre.__add_message_to_jlabel("| | il gagne 5 points de vie");
+            Fenetre.__add_message_to_jlabel("____________________");
+            Fenetre.cptNbrLogs += 3;
+            Fenetre.p2.revalidate();
+            if (pdv >= this.TYPE.getPoints())
+                pdv = this.TYPE.getPoints();
+
+            this.setPointsDeVie(pdv);
+
+        }
         jouer = true;
+
     }
 
 }
